@@ -16,6 +16,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_library(jssp_core
+    src/jssp/InstanceJSSP.cpp
 )
 
 target_include_directories(jssp_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -24,7 +25,7 @@ add_executable(jssp_runner src/main.cpp)
 target_link_libraries(jssp_runner PRIVATE jssp_core)
 
 add_executable(jssp_test 
-    test/hello_test.cpp
+    test/testInstanceJSSP.cpp
 )
 target_link_libraries(jssp_test PRIVATE jssp_core GTest::gtest_main)
 

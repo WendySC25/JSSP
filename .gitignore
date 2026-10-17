@@ -1,0 +1,14 @@
+.DS_Store
+.DS_Store?
+build/
+data/
+docs/
+*.csv
+*.fls
+*.bbl
+*.log
+*.blg
+*.gz
+*.aux
+*.fdb_latexmk
+*.xml

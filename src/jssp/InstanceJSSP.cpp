@@ -42,3 +42,28 @@ std::shared_ptr<const InstanceJSSP> InstanceJSSP::loadFromFile(const std::string
     return instance;
 }
 
+
+int InstanceJSSP::calculateUpperBound() const {
+    return std::accumulate(timeOf.begin(), timeOf.end(),0);
+}
+
+int InstanceJSSP::calculateLowerBound() const{
+
+    int maxJobs = 0;
+    for(int i = 0; i < n; i++){
+        int sumJob = 0;
+        for(int j; j < m; j++)
+            sumJob += timeOf[getOpId(i,j)];
+        maxJobs = std::max(maxJobs, sumJob);
+    }
+
+    std::vector<int> temp(m,0);
+    int maxMachines = 0;
+    for(int i = 0; i < n*m; i++){
+        temp[machineOf[i]] += timeOf[i];
+        maxJobs = std::max(maxJobs, temp[machineOf[i]]);
+    }
+
+    return std::max(maxMachines,maxJobs);
+    
+}

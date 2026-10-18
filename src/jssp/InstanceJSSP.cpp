@@ -17,7 +17,7 @@ std::shared_ptr<const InstanceJSSP> InstanceJSSP::loadFromFile(const std::string
         throw std::runtime_error("Useless path: " + filepath);
     
     int n, m, lb, ub;
-    if (!(file >> n >> m >> lb >> ub)) 
+    if (!(file >> n >> m >> ub >> lb)) 
         throw std::invalid_argument("Missing n m cu ci.");
 
     std::shared_ptr<InstanceJSSP> instance = std::make_shared<InstanceJSSP>(n, m, lb, ub);

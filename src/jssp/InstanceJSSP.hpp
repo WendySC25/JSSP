@@ -30,15 +30,36 @@ class InstanceJSSP {
 
         std::vector<std::vector<int> > opsPerMachine;
 
-        int calculateUpperBound();
-        int calculateLowerBound();
 
     public:
         InstanceJSSP(int n, int m, int lb, int ub);
 
         static std::shared_ptr<const InstanceJSSP> loadFromFile(const std::string& filepath);
 
-        inline int getOpId(int job, int order) const { return job * m + order; }
+        inline int getOpId(int job, int order) const { 
+            return job * m + order;
+        }
+
+        inline int getJobSuccessor(int opId) const {
+            return ((opId % m) < (m - 1)) ? (opId + 1) : -1;
+        }
+
+        int calculateUpperBound() const;
+        int calculateLowerBound() const;
+
+        /** Getters */
+        inline int getN() const { return n; }
+        inline int getM() const { return m; }
+        inline int getNumOps() const { return numOps; }
+        inline int getLowerBound() const { return lower_bound; }
+        inline int getUpperBound() const { return upper_bound; }
+
+        inline const std::vector<int>& getMachines() const { return machineOf; }
+        inline const std::vector<int>& getTimes() const { return timeOf; }
+        inline const std::vector<std::vector<int>>& getOpsPerMachines() const { return opsPerMachine; }
         
+        inline int getMachineOf(int opId) const { return machineOf[opId]; }
+        inline int getTimeOf(int opId) const { return timeOf[opId]; }
+        inline const std::vector<int>& getOpsForMachine(int machineId) const { return opsPerMachine[machineId]; }
 
 };

@@ -15,7 +15,8 @@ class Solution {
         mutable double cost;
 
     public:
-
+        Solution(double cost = 0.0) : cost(cost) {}
+        
         virtual std::shared_ptr<const Solution> createRandom(std::mt19937& rng) const = 0;
         /**
          * @brief Proposes a new neighbor solution.
@@ -26,7 +27,7 @@ class Solution {
         /**
          * @brief Accepts the proposed neighbor by aplting the Move, making it the current solution.
          */
-        virtual void acceptPropose(const Move& move, double newCost) const = 0;;
+        virtual std::shared_ptr<const Solution> materializePropose(const Move& move, double newCost) const = 0;;
 
         /**
          * @brief Returns a string representation of the solution state.

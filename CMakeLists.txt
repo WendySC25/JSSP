@@ -17,6 +17,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_library(jssp_core
     src/jssp/InstanceJSSP.cpp
+    src/jssp/CostFunction.cpp
 )
 
 target_include_directories(jssp_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -26,6 +27,7 @@ target_link_libraries(jssp_runner PRIVATE jssp_core)
 
 add_executable(jssp_test 
     test/testInstanceJSSP.cpp
+    test/testCostFunction.cpp
 )
 target_link_libraries(jssp_test PRIVATE jssp_core GTest::gtest_main)
 

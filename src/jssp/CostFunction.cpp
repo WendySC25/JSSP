@@ -28,7 +28,7 @@ void CostFunction::calculateIndegree(const std::vector<int>& order){
 
 }
 
-std::pair<int, int> CostFunction::getEvaluationValues(){
+std::pair<int, int> CostFunction::runKanh(){
 
     int queueLastIndex = 0;
     for (int id = 0; id < N; ++id) {
@@ -55,7 +55,7 @@ std::pair<int, int> CostFunction::getEvaluationValues(){
     return {makespan, N - queueLastIndex};
 }
 
-double CostFunction::evaluate(const std::vector<int>& order){
+Evaluation CostFunction::evaluateDetailed(const std::vector<int>& order){
 
     std::fill(finishT.begin(), finishT.end(), 0);
     std::fill(lastOpInMachine.begin(), lastOpInMachine.end(), -1);
@@ -64,14 +64,12 @@ double CostFunction::evaluate(const std::vector<int>& order){
     
     calculateIndegree(order);
     
-    auto values = getEvaluationValues();
-    int makespan = values.first;
-    int cycleNodes = values.second;
+    auto [makespan,cycleNodes] = runKanh();
 
     double cost = (makespan - instance->getLowerBound()) /  (instance->getUpperBound() - instance->getLowerBound());
     cost += (instance->getLowerBound() * cycleNodes);
 
-    return cost;
+    return {cost, makespan, cycleNodes};
 }
 
 int CostFunction::queueStep(int id, int next, int queueLastIndex) {

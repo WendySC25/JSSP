@@ -1,6 +1,7 @@
 #pragma once
 
 #include "InstanceJSSP.hpp"
+#include "Evaluation.hpp"
 
 class CostFunction{
     private:
@@ -17,13 +18,18 @@ class CostFunction{
         std::vector<int> lastOpInMachine;
         std::vector<int> nextOpInMachine;
         
-
         int queueStep(int id, int v, int queueLastIndex);
 
     public:
         CostFunction(std::shared_ptr<const InstanceJSSP> inst);
-        double evaluate(const std::vector<int>& order);
+        
+        Evaluation evaluateDetailed(const std::vector<int>& order);
+        std::pair<int, int> runKanh();
+
         void calculateIndegree(const std::vector<int>& order);
-        std::pair<int, int> getEvaluationValues();
+
+        inline double evaluate(const std::vector<int>& order) {
+            return evaluateDetailed(order).cost;
+        }
         
 };

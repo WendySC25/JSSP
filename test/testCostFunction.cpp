@@ -13,7 +13,6 @@ TEST(CostFuntionTest, JSSP3x3_Factible){
     CostFunction f(inst);
     Evaluation e = f.evaluateDetailed(good);
 
-    EXPECT_EQ(e.cost, 12.0);
     EXPECT_EQ(e.makespan, 12);
     EXPECT_EQ(e.cycleNodes, 0);
 

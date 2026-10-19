@@ -66,9 +66,12 @@ Evaluation CostFunction::evaluateDetailed(const std::vector<int>& order){
     
     auto [makespan,cycleNodes] = runKanh();
 
-    double cost = (makespan - instance->getLowerBound()) /  (instance->getUpperBound() - instance->getLowerBound());
-    cost += (instance->getLowerBound() * cycleNodes);
+    double lb = static_cast<double>(instance->getLowerBound());
+    double ub = static_cast<double>(instance->getUpperBound());
 
+    double cost = (static_cast<double>(makespan) - lb) / (ub - lb);
+    cost += (lb * cycleNodes);
+    
     return {cost, makespan, cycleNodes};
 }
 

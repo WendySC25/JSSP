@@ -52,7 +52,7 @@ int InstanceJSSP::calculateLowerBound() const{
     int maxJobs = 0;
     for(int i = 0; i < n; i++){
         int sumJob = 0;
-        for(int j; j < m; j++)
+        for(int j = 0; j < m; j++)
             sumJob += timeOf[getOpId(i,j)];
         maxJobs = std::max(maxJobs, sumJob);
     }

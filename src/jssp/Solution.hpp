@@ -1,6 +1,7 @@
 #pragma once
 #include<string>
 #include<random>
+#include <memory>
 
 #include "Candidate.hpp"
 
@@ -9,37 +10,38 @@
  */
 
 // Same as TSP but better xd
-class Solution {
+class Solution : public std::enable_shared_from_this<Solution>{
     protected:
         /** Current cost or objective function value of the solution. */
         mutable double cost;
 
     public:
         Solution(double cost = 0.0) : cost(cost) {}
-        
+        virtual ~Solution() = default;
+
         virtual std::shared_ptr<const Solution> createRandom(std::mt19937& rng) const = 0;
         /**
          * @brief Proposes a new neighbor solution.
          * @return Move to generate the proposed neighbor.
          */
-        virtual std::pair<Move, double> proposeNeighbor(std::mt19937& rng) const = 0;
+        virtual Candidate proposeNeighbor(std::mt19937& rng) const = 0;
 
         /**
          * @brief Accepts the proposed neighbor by aplting the Move, making it the current solution.
          */
-        virtual std::shared_ptr<const Solution> materializePropose(const Move& move, double newCost) const = 0;;
+        virtual std::shared_ptr<const Solution> materializePropose(const Move& move, double newCost) const = 0;
 
         /**
          * @brief Returns a string representation of the solution state.
          * @return Formatted string with solution details.
          */
-        virtual std::string toString() = 0;
+        virtual std::string toString() const = 0;
 
         /**
          * @brief Retrieves the current cost of the solution.
          * @return The current cost.
          */
-        double getCost(){
+        double getCost() const{
             return cost;
         }
 };

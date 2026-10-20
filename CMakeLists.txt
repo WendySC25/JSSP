@@ -18,6 +18,7 @@ FetchContent_MakeAvailable(googletest)
 add_library(jssp_core
     src/jssp/InstanceJSSP.cpp
     src/jssp/CostFunction.cpp
+    src/jssp/SolutionJSSP.cpp
 )
 
 target_include_directories(jssp_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

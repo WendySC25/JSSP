@@ -39,6 +39,9 @@ std::shared_ptr<const InstanceJSSP> InstanceJSSP::loadFromFile(const std::string
 
     }
 
+    instance->lower_bound = instance->calculateLowerBound();
+    instance->upper_bound = instance->calculateUpperBound();
+
     return instance;
 }
 
@@ -59,9 +62,9 @@ int InstanceJSSP::calculateLowerBound() const{
 
     std::vector<int> temp(m,0);
     int maxMachines = 0;
-    for(int i = 0; i < n*m; i++){
+    for (int i = 0; i < n * m; i++) {
         temp[machineOf[i]] += timeOf[i];
-        maxJobs = std::max(maxJobs, temp[machineOf[i]]);
+        maxMachines = std::max(maxMachines, temp[machineOf[i]]);
     }
 
     return std::max(maxMachines,maxJobs);

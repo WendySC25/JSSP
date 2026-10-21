@@ -25,7 +25,6 @@ class SolutionJSSP : public Solution  {
         std::shared_ptr<const Solution> materializePropose(const Move& move, double newCost) const override;
 
         std::string toString() const override;
-        
         std::vector<int> getOrder() const { return order; };
 
 };

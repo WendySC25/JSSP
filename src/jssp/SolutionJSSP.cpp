@@ -79,7 +79,17 @@ std::shared_ptr<const Solution> SolutionJSSP::materializePropose(const Move& mov
 }
 
 std::string SolutionJSSP::toString() const {
+    std::vector<std::string> sv(instance->getM(),"[");
+
+    for(int id : order){
+        int m = instance->getMachineOf(id);
+        sv[m] += std::to_string(id) + ", ";
+    }
+    
     std::string s;
-    for(int id : order) s += std::to_string(id) + " ";
+    for(int i = 0; i < instance->getM(); i++){
+        s += sv[i] + "] \n";
+    }
+
     return s;
 }

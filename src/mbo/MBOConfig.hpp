@@ -1,6 +1,9 @@
 
 #pragma once
 
+#include <string>
+#include <stdexcept>
+
 struct MBOconfig {
     /** Number of birds (ODD)*/
     int n = 51;
@@ -17,7 +20,7 @@ struct MBOconfig {
     /**  Limit on neighbor evaluations */
     int K = 10000;
 
-    void validate() const;
+    inline void validate() const;
 };
 
 void MBOconfig::validate() const {

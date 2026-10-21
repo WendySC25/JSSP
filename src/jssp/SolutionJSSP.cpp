@@ -19,16 +19,6 @@ costFunction(std::move(costFunc)),
 order(std::move(ord)),
       posOfOp(std::move(pos)) {}
 
-SolutionJSSP::SolutionJSSP(std::shared_ptr<const InstanceJSSP> inst, std::shared_ptr<CostFunction> costFunc, std::vector<int> order, double cost) :
-Solution(cost), 
-instance(std::move(inst)),
-costFunction(std::move(costFunc)),
-order(std::move(order)) {
-    posOfOp.resize(order.size());
-    for (int id = 0; id < order.size(); id++) 
-        posOfOp[order[id]] = id;
-}
-
 std::shared_ptr<const Solution> SolutionJSSP::createRandom(std::mt19937& rng) const {
     return std::make_shared<const SolutionJSSP>(instance, costFunction, rng);
 }

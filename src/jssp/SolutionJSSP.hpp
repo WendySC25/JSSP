@@ -19,13 +19,14 @@ class SolutionJSSP : public Solution  {
     public:
         SolutionJSSP(std::shared_ptr<const InstanceJSSP> inst, std::shared_ptr<CostFunction> costFunc, std::mt19937& rng);
         SolutionJSSP(std::shared_ptr<const InstanceJSSP> inst, std::shared_ptr<CostFunction> costFunc, std::vector<int> order, std::vector<int> pos, double cost);
-        SolutionJSSP(std::shared_ptr<const InstanceJSSP> inst, std::shared_ptr<CostFunction> costFunc, std::vector<int> order, double cost);
 
         std::shared_ptr<const Solution> createRandom(std::mt19937& rng) const override;
         Candidate proposeNeighbor(std::mt19937& rng) const override;
         std::shared_ptr<const Solution> materializePropose(const Move& move, double newCost) const override;
 
         std::string toString() const override;
+        
+        std::vector<int> getOrder() const { return order; };
 
 };
 

@@ -18,7 +18,7 @@ struct MBOconfig {
     int t = 10;
 
     /**  Limit on neighbor evaluations */
-    int K = 10000;
+    int K = 1000;
 
     inline void validate() const;
 };

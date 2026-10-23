@@ -10,4 +10,8 @@ struct Candidate {
     std::shared_ptr<const Solution> parent;
     Move move;
     double cost;
+
+    bool operator<(const Candidate& other) const {
+        return cost < other.cost;
+    }
 };

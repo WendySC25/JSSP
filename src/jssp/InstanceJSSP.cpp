@@ -47,7 +47,28 @@ std::shared_ptr<const InstanceJSSP> InstanceJSSP::loadFromFile(const std::string
 
 
 int InstanceJSSP::calculateUpperBound() const {
-    return std::accumulate(timeOf.begin(), timeOf.end(),0);
+    std::vector<int> jobsUpperBound(n,0);
+    std::vector<int> machinesUpperBound(m,0);
+
+    int upper = -1;
+
+    for(int i = 0; i < m; i++){
+        for(int j = 0; j < n; j++){
+            int id = getOpId(j,i);
+            int ma = machineOf[id];
+            int t = timeOf[id];
+
+            int initTime = std::max(jobsUpperBound[j], machinesUpperBound[ma]);
+            int endTime = initTime + t;
+
+            jobsUpperBound[j] = endTime;
+            machinesUpperBound[ma] = endTime;
+
+            upper = std::max(jobsUpperBound[j], upper);
+        }
+    }
+
+    return upper;
 }
 
 int InstanceJSSP::calculateLowerBound() const{

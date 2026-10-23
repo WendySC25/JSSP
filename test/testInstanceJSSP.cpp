@@ -10,14 +10,14 @@ TEST(InstanceTest, Load3x3) {
     EXPECT_EQ(inst->getN(), 3);
     EXPECT_EQ(inst->getM(), 3);
     EXPECT_EQ(inst->getNumOps(), 9);
-    EXPECT_EQ(inst->getUpperBound(), 24);
+    EXPECT_EQ(inst->getUpperBound(), 12);
     EXPECT_EQ(inst->getLowerBound(), 10);
 
     EXPECT_EQ(inst->getJobSuccessor(0), 1);
     EXPECT_EQ(inst->getJobSuccessor(1), 2);
     EXPECT_EQ(inst->getJobSuccessor(2), -1);
 
-    EXPECT_EQ(inst->calculateUpperBound(), 24);
+    EXPECT_EQ(inst->calculateUpperBound(), 12);
     EXPECT_EQ(inst->calculateLowerBound(), 10);
 }
 
@@ -32,9 +32,8 @@ TEST(InstanceTest, Load100x100) {
     EXPECT_EQ(inst->getLowerBound(), 56381);
 
     // Failed every time
-    // EXPECT_EQ(inst->calculateUpperBound(), 125341);
-    
-    // EXPECT_EQ(inst->calculateLowerBound(), 56381);
+    EXPECT_EQ(inst->calculateUpperBound(), 125341);
+    EXPECT_EQ(inst->calculateLowerBound(), 56381);
 }
 
 
@@ -49,7 +48,6 @@ TEST(InstanceTest, Load40x40) {
     EXPECT_EQ(inst->getLowerBound(), 103);
 
     // Failed every time
-    // EXPECT_EQ(inst->calculateUpperBound(), 205);
-    
-    // EXPECT_EQ(inst->calculateLowerBound(), 103);
+    EXPECT_EQ(inst->calculateUpperBound(), 205);
+    EXPECT_EQ(inst->calculateLowerBound(), 103);
 }

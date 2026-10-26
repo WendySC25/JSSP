@@ -1,26 +1,19 @@
 #include "jssp/SolutionJSSP.hpp"
 
-SolutionJSSP::SolutionJSSP(std::shared_ptr<const InstanceJSSP> inst, std::shared_ptr<CostFunction> costFunc, std::mt19937& rng) : 
+SolutionJSSP::SolutionJSSP(std::shared_ptr<CostFunction> costFunc, std::mt19937& rng) : 
 Solution(0.0),
-instance(std::move(inst)),
 costFunction(std::move(costFunc)),
-order(generateRandomOrder(*instance, rng)) {
-    posOfOp.resize(this->order.size());
-    for (int id = 0; id < this->order.size(); id++) 
-        posOfOp[this->order[id]] = id;
-    
+order(generateRandomOrder(costFunction->getInstance(), rng)) {
     cost = costFunction->evaluate(order);
 }
 
-SolutionJSSP::SolutionJSSP(std::shared_ptr<const InstanceJSSP> inst, std::shared_ptr<CostFunction> costFunc, std::vector<int> ord, std::vector<int> pos, double cost):
+SolutionJSSP::SolutionJSSP(std::shared_ptr<CostFunction> costFunc, std::vector<int> ord, double cost):
 Solution(cost),
-instance(std::move(inst)),
 costFunction(std::move(costFunc)),
-order(std::move(ord)),
-      posOfOp(std::move(pos)) {}
+order(std::move(ord)) {}
 
 std::shared_ptr<const Solution> SolutionJSSP::createRandom(std::mt19937& rng) const {
-    return std::make_shared<const SolutionJSSP>(instance, costFunction, rng);
+    return std::make_shared<const SolutionJSSP>(costFunction, rng);
 }
 
 std::vector<int> SolutionJSSP::generateRandomOrder(const InstanceJSSP& inst, std::mt19937& rng) {
@@ -34,35 +27,35 @@ std::vector<int> SolutionJSSP::generateRandomOrder(const InstanceJSSP& inst, std
 
     std::shuffle(jobs.begin(), jobs.end(), rng);
 
-    std::vector<int> counter(n, 0);
-    std::vector<int> order;
-    order.reserve(jobs.size());
+    std::vector<int> nextOp(n, 0);
+    std::vector<int> fill(m, 0); 
+    std::vector<int> order(inst.getNumOps());
 
-    for (int i : jobs) 
-        order.push_back(inst.getOpId(i, counter[i]++));
-
+    for (int j : jobs) {
+        int id = inst.getOpId(j, nextOp[j]++);
+        int mach = inst.getMachineOf(id);
+        order[mach * n + fill[mach]++] = id;
+    }
     return order;
 }
 
 Candidate SolutionJSSP::proposeNeighbor(std::mt19937& rng) const {
 
-    std::uniform_int_distribution<int> machineDist(0, instance->getM() - 1);
+    const InstanceJSSP& inst = costFunction->getInstance();
+    const int n = inst.getN();
 
-    int machine = machineDist(rng);
-    const std::vector<int>& machineOps = instance->getOpsForMachine(machine);
-
-    std::uniform_int_distribution<int> opDist(0, machineOps.size() - 1);
+    std::uniform_int_distribution<int> machineDist(0, inst.getM() - 1);
+    
+    std::uniform_int_distribution<int> opDist(0, n - 1);
 
     int a = opDist(rng);
     int b = opDist(rng);
     while (a == b) 
         b = opDist(rng);
-    
-    Move mv{posOfOp[machineOps[a]], posOfOp[machineOps[b]]};
-    std::swap(order[mv.i], order[mv.j]);
-    double neighborCost = costFunction->evaluate(order);
 
-    std::swap(order[mv.i], order[mv.j]);
+    int base = machineDist(rng) * n;
+    Move mv{base + a, base + b};
+    double neighborCost = costFunction->evaluateSwap(order, mv.i, mv.j);
     return Candidate{shared_from_this(), mv, neighborCost};
 }
 
@@ -71,25 +64,21 @@ std::shared_ptr<const Solution> SolutionJSSP::materializePropose(const Move& mov
     std::vector<int> nextOrder = order;
     std::swap(nextOrder[move.i], nextOrder[move.j]);
 
-    std::vector<int> nextPos = posOfOp;
-    nextPos[nextOrder[move.i]] = move.i;
-    nextPos[nextOrder[move.j]] = move.j;
-
-    return std::make_shared<const SolutionJSSP>(instance, costFunction, std::move(nextOrder), std::move(nextPos), newCost);
+    return std::make_shared<const SolutionJSSP>(costFunction, std::move(nextOrder), newCost);
 }
 
 std::string SolutionJSSP::toString() const {
-    std::vector<std::string> sv(instance->getM(),"[");
+    int n = costFunction->getInstance().getN();
+    int m = costFunction->getInstance().getM();
 
-    for(int id : order){
-        int m = instance->getMachineOf(id);
-        sv[m] += std::to_string(id) + ", ";
-    }
-    
     std::string s;
-    for(int i = 0; i < instance->getM(); i++){
-        s += sv[i] + "] \n";
+    for(int machine = 0; machine < m; machine++){
+        s += "[";
+        for(int i = 0; i < n; i++) {
+            if(i) s += ", ";
+            s += std::to_string(order[machine * n + i]);
+        }
+        s += "]\n";
     }
-
     return s;
 }

@@ -9,7 +9,7 @@
 class SolutionJSSP : public Solution  {
     private:
         std::shared_ptr<CostFunction> costFunction;
-        mutable std::vector<int> order;
+        std::vector<int> order;
 
         static std::vector<int> generateRandomOrder(const InstanceJSSP& inst, std::mt19937& rng);
 

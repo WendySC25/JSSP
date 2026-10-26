@@ -8,25 +8,36 @@ indegree(N),
 baseIndegree(N),
 queue(N),
 finishT(N),
-lastOpInMachine(m),
 nextOpInMachine(N){
-    for (int id = 0; id < N; id++) 
-        baseIndegree[static_cast<std::size_t>(id)] = (id % m == 0) ? 0 : 1;
-}
-
-void CostFunction::calculateIndegree(const std::vector<int>& order){
-
-    for(const int id : order){
-        int machine = instance->getMachineOf(id);
-        int prev = lastOpInMachine[machine];
-        if(prev != -1) {
-            nextOpInMachine[prev] = id;
-            indegree[id]++;
-        } 
-        lastOpInMachine[machine] = id;
+    for (int id = 0; id < N; id++) {
+        int i = instance->getJobSuccessor(id);
+        if (i != -1) baseIndegree[i]++;
     }
-
 }
+
+void CostFunction::initEvaluation(const std::vector<int>& order, int i, int j) {
+    
+    auto at = [&](int p) {
+        if (p == i) return order[j];
+        if (p == j) return order[i];
+        return order[p];
+    };
+
+    for(int machine = 0; machine<m; machine++) {
+        int base = machine * m;
+        int cur = at(base);
+
+        for(int p = 0; p<m; p++) {
+            finishT[cur] = 0;
+            indegree[cur] = baseIndegree[cur] + (p != 0);
+
+            int nxt = (p+1 < m) ? at(base+p+1) : -1;
+            nextOpInMachine[cur] = nxt;
+            cur = nxt;
+        }
+    }
+}
+
 
 std::pair<int, int> CostFunction::runKanh(){
 
@@ -56,24 +67,27 @@ std::pair<int, int> CostFunction::runKanh(){
 }
 
 Evaluation CostFunction::evaluateDetailed(const std::vector<int>& order){
+    initEvaluation(order,-1,-1);
+    return calculateEvaluation();
+}
 
-    std::fill(finishT.begin(), finishT.end(), 0);
-    std::fill(lastOpInMachine.begin(), lastOpInMachine.end(), -1);
-    std::fill(nextOpInMachine.begin(), nextOpInMachine.end(), -1);
-    std::copy(baseIndegree.begin(), baseIndegree.end(), indegree.begin());
-    
-    calculateIndegree(order);
-    
+Evaluation CostFunction::evaluateSwapDetailed(const std::vector<int>& order, int i, int j){
+    initEvaluation(order,i,j);
+    return calculateEvaluation();
+}
+
+Evaluation CostFunction::calculateEvaluation() {
     auto [makespan,cycleNodes] = runKanh();
 
     double lb = static_cast<double>(instance->getLowerBound());
     double ub = static_cast<double>(instance->getUpperBound());
 
-    double cost = (static_cast<double>(makespan) - lb) / (ub - lb);
+    double cost = (static_cast<double>(makespan) - lb) / std::max(1.0, ub - lb);
     cost += (lb * cycleNodes);
     
     return {cost, makespan, cycleNodes};
 }
+
 
 int CostFunction::queueStep(int id, int next, int queueLastIndex) {
 

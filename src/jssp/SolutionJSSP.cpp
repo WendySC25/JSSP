@@ -46,7 +46,7 @@ Candidate SolutionJSSP::proposeNeighbor(std::mt19937& rng) const {
 
     std::uniform_int_distribution<int> machineDist(0, inst.getM() - 1);
     
-    std::uniform_int_distribution<int> opDist(0, n - 1);
+    std::uniform_int_distribution<int> opDist(0, n - 2);
 
     int a = opDist(rng);
     int b = opDist(rng);

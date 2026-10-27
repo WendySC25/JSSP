@@ -1,0 +1,85 @@
+(.venv) (base) wendysc@DNAs-MacBook-Pro JSSP % ./build/jssp_runner                  
+=== CORRIENDO 1000 EXPERIMENTOS ===
+Exp     Seed    Makespan        Ciclos
+----------------------------------------
+1       42      142441          0
+2       55      144741          0
+3       68      144298          0
+4       81      142739          0
+5       94      144765          0
+6       107     142073          0
+7       120     139766          0
+8       133     140636          0
+9       146     144962          0
+10      159     143018          0
+11      172     143709          0
+12      185     142563          0
+13      198     141000          0
+14      211     141629          0
+15      224     144047          0
+16      237     142371          0
+17      250     141469          0
+18      263     140808          0
+19      276     143923          0
+20      289     142566          0
+21      302     143274          0
+22      315     140425          0
+23      328     142570          0
+24      341     143222          0
+25      354     143683          0
+26      367     141547          0
+27      380     142488          0
+28      393     145333          0
+29      406     140783          0
+30      419     144553          0
+31      432     141429          0
+32      445     139759          0
+33      458     143351          0
+34      471     141923          0
+35      484     142604          0
+36      497     142335          0
+37      510     142658          0
+38      523     141813          0
+39      536     140807          0
+40      549     143075          0
+41      562     144262          0
+42      575     142134          0
+43      588     142605          0
+
+
+    MBOconfig config;
+    config.n = 51;
+    config.k = 5;
+    config.x = 1;
+    config.t = 10;
+    config.K = 1000000; 
+
+    int numExperiments = 1000;
+    std::uint32_t baseSeed = 42;
+
+    int bestMakespanOverall = 1e9;
+    double sumMakespan = 0.0;
+
+    std::cout << "Exp\tSeed\tMakespan\tCiclos\n";
+    std::cout << "----------------------------------------\n";
+
+    for (int i = 0; i < numExperiments; ++i) {
+        std::uint32_t currentSeed = baseSeed + i * 13;
+
+        auto costFunc = std::make_shared<CostFunction>(inst);
+        std::mt19937 rng(currentSeed);
+        auto solution = std::make_shared<const SolutionJSSP>(costFunc, rng);
+
+        MBO mbo(solution, config);
+        MBOResult res = mbo.run(currentSeed);
+
+        const auto& bestJSSP = static_cast<const SolutionJSSP&>(*res.bestSolution);
+        Evaluation eval = costFunc->evaluateDetailed(bestJSSP.getOrder());
+
+        sumMakespan += eval.makespan;
+        if (eval.makespan < bestMakespanOverall) {
+            bestMakespanOverall = eval.makespan;
+        }
+
+        std::cout << (i + 1) << "\t" << currentSeed << "\t" << eval.makespan << "\t\t" << eval.cycleNodes << "\n";
+    }

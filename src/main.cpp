@@ -19,7 +19,7 @@ int main() {
     std::mt19937 rng(seed);
 
     auto costFunc = std::make_shared<CostFunction>(inst);
-    auto solution = std::make_shared<const SolutionJSSP>(inst, costFunc, rng);
+    auto solution = std::make_shared<const SolutionJSSP>(costFunc, rng);
     MBO mbo(solution, config);
     MBOResult res = mbo.run(seed);
 

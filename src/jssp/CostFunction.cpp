@@ -4,6 +4,7 @@ CostFunction::CostFunction(std::shared_ptr<const InstanceJSSP> inst):
 instance(inst),
 N(inst->getNumOps()),
 m(inst->getM()),
+n(inst->getN()),
 indegree(N),
 baseIndegree(N),
 queue(N),

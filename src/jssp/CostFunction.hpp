@@ -10,6 +10,7 @@ class CostFunction{
 
         int N;
         int m;
+        int n;
 
         std::vector<int> indegree;
         std::vector<int> baseIndegree;
@@ -31,5 +32,7 @@ class CostFunction{
         inline double evaluate(const std::vector<int>& order) {
             return evaluateDetailed(order).cost;
         }
+
+        const InstanceJSSP& getInstance() const { return *instance; }
         
 };

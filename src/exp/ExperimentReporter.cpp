@@ -19,12 +19,13 @@ void ExperimentReporter::generateReportCSV(const std::string &filepath, const st
 
     out << std::setprecision(10);
     
-    out << "label,seed,n,k,x,t,K,ok,cost,seconds,error,solution\n";
+    out << "label,timestamp,seed,n,k,x,t,K,ok,cost,seconds,error,solution\n";
             
     for (const RunResult &r : results) {
         const RunConfig &c = r.config;
         out << csvField(c.label) << ','
             << c.seed << ','
+            << csvField(r.timestamp) << ','
             << c.params.n << ','
             << c.params.k << ','
             << c.params.x << ','
@@ -34,6 +35,6 @@ void ExperimentReporter::generateReportCSV(const std::string &filepath, const st
             << r.cost << ',' 
             << std::fixed << std::setprecision(3) << r.seconds << std::defaultfloat << ','
             << csvField(r.error) << ','
-            << csvField(r.best) << '\n';                                           
+            << csvField(r.solutionString) << '\n';                                           
     }           
 }

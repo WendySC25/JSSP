@@ -1,3 +1,5 @@
+#pragma once
+
 #include "RunConfig.hpp"
 
 struct RunResult {
@@ -11,5 +13,6 @@ struct RunResult {
     int nodesCycles = -1;
     double seconds = 0.0; 
 
-    std::shared_ptr<const Solution> best; // o sólo el string hmmm
+    std::string timestamp;
+    std::string solutionString;
 };

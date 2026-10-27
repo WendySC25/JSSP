@@ -1,4 +1,4 @@
-Instancia cargada: 40x40 | LB: 103 | UB: 3251
+40x40 | LB: 103 | UB: 3251
 
 Exp     Seed    Makespan        Ciclos  Costo
 ----------------------------------------------------

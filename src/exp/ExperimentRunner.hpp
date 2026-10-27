@@ -20,15 +20,15 @@ class ExperimentRunner {
     private:
         std::shared_ptr<const InstanceJSSP> instance;
         RunResult runOne(const RunConfig& config) const;
+    
+    public:
+        ExperimentRunner(std::shared_ptr<const InstanceJSSP> inst);
 
-        /**
+        /*
          * @brief Generates a string representation of the current time.
          * @return The formatted timestamp.
          */
         std::string nowTimestamp() const;
-    
-    public:
-        ExperimentRunner(std::shared_ptr<const InstanceJSSP> inst);
     
         std::vector<RunResult> run(const std::vector<RunConfig>& configs, int threads = 0) const;
 

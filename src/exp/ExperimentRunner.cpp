@@ -33,10 +33,17 @@ RunResult ExperimentRunner::runOne(const RunConfig& config) const {
         auto t0 = std::chrono::steady_clock::now();
         MBOResult r = mbo.run(config.seed);
         auto t1 = std::chrono::steady_clock::now();
-
+  
         res.seconds = std::chrono::duration<double>(t1 - t0).count();
         res.solutionString = r.bestSolution->toString();
         res.cost = r.bestSolution->getCost();
+
+        auto jsspSol = std::dynamic_pointer_cast<const SolutionJSSP>(r.bestSolution);
+        if(jsspSol) {
+            Evaluation eval = cf->evaluateDetailed(jsspSol->getOrder());
+            res.makespan = eval.makespan;   
+            res.nodesCycles = eval.cycleNodes;
+        }
         res.ok = true;
         
     }catch(const std::exception& e) {

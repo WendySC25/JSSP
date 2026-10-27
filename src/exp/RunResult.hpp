@@ -9,7 +9,7 @@ struct RunResult {
     bool ok = false;    
 
     double cost = 0.0;
-    int makespace = -1;
+    int makespan = -1;
     int nodesCycles = -1;
     double seconds = 0.0; 
 

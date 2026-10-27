@@ -19,7 +19,7 @@ void ExperimentReporter::generateReportCSV(const std::string &filepath, const st
 
     out << std::setprecision(10);
     
-    out << "label,timestamp,seed,n,k,x,t,K,ok,cost,seconds,error,solution\n";
+    out << "label,timestamp,seed,n,k,x,t,K,ok,makespan,cycleNodes,cost,seconds,error,solution\n";
             
     for (const RunResult &r : results) {
         const RunConfig &c = r.config;
@@ -32,6 +32,8 @@ void ExperimentReporter::generateReportCSV(const std::string &filepath, const st
             << c.params.t << ','
             << c.params.K << ','
             << (r.ok ? "factible" : "no factible") << ','
+            << r.makespan << ','
+            << r.nodesCycles << ','
             << r.cost << ',' 
             << std::fixed << std::setprecision(3) << r.seconds << std::defaultfloat << ','
             << csvField(r.error) << ','

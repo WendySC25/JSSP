@@ -1,57 +1,44 @@
 #include <iostream>
-#include <memory>
-#include <random>
-#include <vector>
-#include <iomanip>
 
 #include "jssp/InstanceJSSP.hpp"
-#include "jssp/SolutionJSSP.hpp"
-#include "mbo/MBO.hpp"
-#include "mbo/MBOConfig.hpp"
-#include "mbo/MBOResult.hpp"
-#include "jssp/CostFunction.hpp"
+#include "exp/ExperimentRunner.hpp"
+#include "exp/ExperimentReporter.hpp"
 
 int main() {
-    auto inst = InstanceJSSP::loadFromFile("./data/JSSP_100_100.txt");
 
-    MBOconfig config;
-    config.n = 51;
-    config.k = 5;
-    config.x = 1;
-    config.t = 10;
-    config.K = 1000000; 
+    try {
+        std::string instancePath = "./data/JSSP_100_100.txt";
+        auto instance = InstanceJSSP::loadFromFile(instancePath);
 
-    int numExperiments = 1000;
-    std::uint32_t baseSeed = 42;
+        ExperimentRunner runner(instance);
+        RunConfig baseConfig;
+    
+        baseConfig.label = "Prueba_MBO_100_100_11aves_inicio_factible";
+        MBOconfig params;
+        params.n = 11;
+        params.K = 5000000;
+        baseConfig.params = params;
 
-    int bestMakespanOverall = 1e9;
-    double sumMakespan = 0.0;
+        std::vector<RunConfig> configs = runner.assignSeeds(baseConfig, 1, 100);
 
-    std::cout << "Exp\tSeed\tMakespan\tCiclos\n";
-    std::cout << "------------------------------------------------\n";
+        std::cout << "Running \n";
+        std::vector<RunResult> results = runner.run(configs, 0);
 
-    for (int i = 0; i < numExperiments; ++i) {
-        std::uint32_t currentSeed = baseSeed + i * 13;
-        std::mt19937 rng(currentSeed);
+        std::cout << "End!\n";
+        ExperimentReporter reporter;
+        reporter.generateReportCSV(runner.nowTimestamp() + "resultados_experimento.csv", results);
 
-        auto costFunc = std::make_shared<CostFunction>(inst);
-        auto solution = std::make_shared<const SolutionJSSP>(costFunc, rng);
+        int makespan = 10000000;
+    
+        for(auto r : results) std::min(makespan, r.makespan);
+        std::cout << "Makespan: " << makespan << '\n';
 
-        MBO mbo(solution, config);
-        MBOResult res = mbo.run(currentSeed);
+        std::cout << "CVS ready'!\n";
 
-        const auto& bestJSSP = static_cast<const SolutionJSSP&>(*res.bestSolution);
-        Evaluation eval = costFunc->evaluateDetailed(bestJSSP.getOrder());
-
-        sumMakespan += eval.makespan;
-        if (eval.makespan < bestMakespanOverall) 
-            bestMakespanOverall = eval.makespan;
-        
-        std::cout << (i + 1) << "\t" << currentSeed << "\t" << eval.makespan << "\t" << eval.cycleNodes << "\n";
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << '\n';
+        return 1;
     }
-
-    std::cout << "Makespan Promedio: " << (sumMakespan / numExperiments) << std::endl;
-    std::cout << "Makespan Global: " << bestMakespanOverall << std::endl;
 
     return 0;
 }

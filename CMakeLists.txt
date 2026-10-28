@@ -20,6 +20,8 @@ add_library(jssp_core
     src/jssp/CostFunction.cpp
     src/jssp/SolutionJSSP.cpp
     src/mbo/MBO.cpp
+    src/exp/ExperimentRunner.cpp
+    src/exp/ExperimentReporter.cpp
 )
 
 target_include_directories(jssp_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

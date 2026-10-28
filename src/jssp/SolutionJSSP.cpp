@@ -22,6 +22,11 @@ std::shared_ptr<const Solution> SolutionJSSP::createRandom(std::mt19937& rng) co
 }
 
 std::vector<int> SolutionJSSP::generateRandomOrder(const InstanceJSSP& inst, std::mt19937& rng) {
+    // std::vector<int> jobs(inst.getNumOps());
+    // std::iota(jobs.begin(), jobs.end(), 0);
+    // std::shuffle(jobs.begin(), jobs.end(), rng);
+    // return jobs;
+
     std::vector<int> jobs;
     jobs.reserve(inst.getNumOps());
     
@@ -44,6 +49,9 @@ std::vector<int> SolutionJSSP::generateRandomOrder(const InstanceJSSP& inst, std
 
 Candidate SolutionJSSP::proposeNeighbor(std::mt19937& rng) const {
     const InstanceJSSP& instance = costFunction->getInstance();
+
+    // std::uniform_int_distribution<int> opDist(0, instance.getNumOps() - 1);
+
     std::uniform_int_distribution<int> machineDist(0, instance.getM() - 1);
 
     int machine = machineDist(rng);
@@ -56,6 +64,8 @@ Candidate SolutionJSSP::proposeNeighbor(std::mt19937& rng) const {
         b = opDist(rng);
     
     Move mv{posOfOp[machineOps[a]], posOfOp[machineOps[b]]};
+
+    // Move mv{a, b};
     std::swap(order[mv.i], order[mv.j]);
     double neighborCost = costFunction->evaluate(order);
 
@@ -81,7 +91,12 @@ std::string SolutionJSSP::toString() const {
 
     for(int id : order){
         int m = instance.getMachineOf(id);
-        sv[m] += std::to_string(id) + ", ";
+        int t = instance.getTimeOf(id);
+
+        int j = id / instance.getM();
+        int pos = id % instance.getM();
+        
+        sv[m] += "[" + std::to_string(j) + "," + std::to_string(pos) + "," + std::to_string(t) + "], ";
     }
     
     std::string s;

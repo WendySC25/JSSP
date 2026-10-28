@@ -1,35 +1,44 @@
 #include <iostream>
 
 #include "jssp/InstanceJSSP.hpp"
-#include "jssp/SolutionJSSP.hpp"
-#include "mbo/MBO.hpp"
+#include "exp/ExperimentRunner.hpp"
+#include "exp/ExperimentReporter.hpp"
 
 int main() {
+
+    try {
+        std::string instancePath = "./data/JSSP_100_100.txt";
+        auto instance = InstanceJSSP::loadFromFile(instancePath);
+
+        ExperimentRunner runner(instance);
+        RunConfig baseConfig;
     
-    auto inst = InstanceJSSP::loadFromFile("./data/JSSP_40_40.txt");
+        baseConfig.label = "Prueba_MBO_100_100_11aves_inicio_factible";
+        MBOconfig params;
+        params.n = 11;
+        params.K = 5000000;
+        baseConfig.params = params;
+
+        std::vector<RunConfig> configs = runner.assignSeeds(baseConfig, 1, 100);
+
+        std::cout << "Running \n";
+        std::vector<RunResult> results = runner.run(configs, 0);
+
+        std::cout << "End!\n";
+        ExperimentReporter reporter;
+        reporter.generateReportCSV(runner.nowTimestamp() + "resultados_experimento.csv", results);
+
+        int makespan = 10000000;
     
-    MBOconfig config;
-    config.n = 51;
-    config.k = 5;
-    config.x = 1;
-    config.t = 10;
-    config.K = 1000;
+        for(auto r : results) std::min(makespan, r.makespan);
+        std::cout << "Makespan: " << makespan << '\n';
 
-    int seed = 25;
-    std::mt19937 rng(seed);
+        std::cout << "CVS ready'!\n";
 
-    auto costFunc = std::make_shared<CostFunction>(inst);
-    auto solution = std::make_shared<const SolutionJSSP>(costFunc, rng);
-    MBO mbo(solution, config);
-    MBOResult res = mbo.run(seed);
-
-    const auto& bestJSSP = static_cast<const SolutionJSSP&>(*res.bestSolution);
-
-    Evaluation eval = costFunc->evaluateDetailed(bestJSSP.getOrder());
-    std::cout << "Makespan:     " << eval.makespan << std::endl;
-    std::cout << "Nodos Ciclos: " << eval.cycleNodes << std::endl;
-    std::cout << "Costo:        " << eval.cost << std::endl;
-    std::cout << "Solución:   \n" << bestJSSP.toString() << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << '\n';
+        return 1;
+    }
 
     return 0;
 }

@@ -56,10 +56,10 @@ void MBO::step(int i) {
     evals += own;
 
     int following = frontOf(i);
-    if (following != -1) {
+    if(following != -1) {
         const auto& shared = flock[following]->leftovers;
         int h = std::min(params.x, (int)shared.size());
-        for (int s = 0; s < h; ++s) 
+        for(int s = 0; s < h; ++s) 
             candidates.push_back(shared[s]);
     }
 
@@ -70,7 +70,7 @@ void MBO::step(int i) {
         const Candidate& c = candidates.front();
         bird.solution = c.parent->materializePropose(c.move,c.cost);
 
-        if (bird.solution->getCost() < best->getCost()) 
+        if(bird.solution->getCost() < best->getCost()) 
             best = bird.solution;
         
         firstLeft = 1;

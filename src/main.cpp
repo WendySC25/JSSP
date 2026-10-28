@@ -7,16 +7,18 @@
 int main() {
 
     try {
-        std::string instancePath = "./data/JSSP_100_100.txt";
+        std::string instancePath = "./data/JSSP_40_40.txt";
         auto instance = InstanceJSSP::loadFromFile(instancePath);
 
         ExperimentRunner runner(instance);
         RunConfig baseConfig;
     
-        baseConfig.label = "Prueba_MBO_100_100_11aves_inicio_factible";
+        baseConfig.label = "REFACTOR_NOMEJOR_40_40_51aves_1M_inicio_factible";
         MBOconfig params;
-        params.n = 11;
-        params.K = 5000000;
+        params.n = 51;
+        params.k = 10;
+        params.t = 10000000;
+        params.K = 1000000;
         baseConfig.params = params;
 
         std::vector<RunConfig> configs = runner.assignSeeds(baseConfig, 1, 100);
@@ -26,11 +28,11 @@ int main() {
 
         std::cout << "End!\n";
         ExperimentReporter reporter;
-        reporter.generateReportCSV(runner.nowTimestamp() + "resultados_experimento.csv", results);
+        reporter.generateReportCSV(runner.nowTimestamp() + baseConfig.label +".csv", results);
 
         int makespan = 10000000;
     
-        for(auto r : results) std::min(makespan, r.makespan);
+        for(auto r : results) makespan = std::min(makespan, r.makespan);
         std::cout << "Makespan: " << makespan << '\n';
 
         std::cout << "CVS ready'!\n";

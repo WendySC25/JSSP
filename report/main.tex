@@ -61,9 +61,12 @@ Inspirados en la formación en V de las aves migratorias, Duman, Uysal y Alkaya 
 El sistema conserva la idea del proyecto anterior: una interfaz abstracta \texttt{Solution} que desacopla la lógica
 de la heurística del problema concreto, por lo que MBO no sabe nada de máquinas ni de trabajos. La implementación está
 en C++, evalúa las soluciones con el algoritmo de Kahn, ejecuta los experimentos en paralelo con múltiples hilos y
-genera reportes en formato CSV. \\
+genera reportes en formato CSV. \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\
 
 \section{Background: MBO}
+Migrating Birds Optimization es una técnica de búsqueda local que mantiene una población de
+soluciones, \textit{aves}, dispuestas en formación en V tal que la primera solución es el líder y las demás forman
+dos alas que lo siguen~\cite{duman2012}. \\
 
 \begin{figure}[htbp]
     \centering
@@ -71,9 +74,13 @@ genera reportes en formato CSV. \\
     \caption{Vuelo en V}
 \end{figure}
 
-Migrating Birds Optimization es una técnica de búsqueda local que mantiene una población de
-soluciones, \textit{aves}, dispuestas en formación en V tal que la primera solución es el líder y las demás forman
-dos alas que lo siguen~\cite{duman2012}. \\
+El fundamento de esta heurística emula el comportamiento migratorio de las aves y su eficiencia aerodinámica~\cite{duman2012}:
+el perfil del ala obliga al flujo superior a desplazarse con mayor velocidad que el inferior, creando una diferencia de presiones
+que genera una fuerza de sustentación, misma que provoca que el aire a alta presión bajo las alas forme vórtices que originan
+corrientes ascendentes (\textit{upwash}). Mientras que un ave en solitario debe consumir grandes cantidades de 
+\textit{potencia inducida} para contrarrestar este efecto y mantenerse en el aire, volar en formación en V permite a los
+seguidores posicionarse para aprovechar directamente el \textit{upwash}. Esto disminuye considerablemente su esfuerzo
+energético y maximiza el rendimiento colectivo de la parvada. \\
 
 El algortimo es simple: cada ave genera vecinos de su solución y si el mejor vecino mejora su costo actual, la reemplaza. 
 Asisimimo, además de sus propios vecinos, considera los mejores vecinos que el ave de enfrente no utilizó; el líder evalúa

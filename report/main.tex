@@ -40,6 +40,17 @@
 
 \section{Introducción}
 
+
+Para este segundo proyecto del Seminario de Heurísticas de Optimización Combinatoria se decidió implementar,
+de forma voluntaria, la heurística Migrating Birds Optimization (MBO). El criterio de elección, su simplicidad.
+Inspirados en la formación en V de las aves migratorias, Duman, Uysal y Alkaya publicaron en 2012
+"Migrating Birds Optimization: A new metaheuristic approach and its performance on quadratic assignment problem".\\
+
+El sistema conserva la idea del proyecto anterior: una interfaz abstracta \texttt{Solution} que desacopla la lógica
+de la heurística del problema concreto, por lo que MBO no sabe nada de máquinas ni de trabajos. La implementación está
+en C++, evalúa las soluciones con el algoritmo de Kahn, ejecuta los experimentos en paralelo con múltiples hilos y
+genera reportes en formato CSV.
+
 \section{Background: Recocido Simulado}
 
 \section{Diseño del Sistema}

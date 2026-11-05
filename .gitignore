@@ -2,7 +2,7 @@
 .DS_Store?
 build/
 docs/
-report/
+report/Notas.txt
 *.csv
 *.fls
 *.bbl

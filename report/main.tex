@@ -61,9 +61,38 @@ Inspirados en la formación en V de las aves migratorias, Duman, Uysal y Alkaya 
 El sistema conserva la idea del proyecto anterior: una interfaz abstracta \texttt{Solution} que desacopla la lógica
 de la heurística del problema concreto, por lo que MBO no sabe nada de máquinas ni de trabajos. La implementación está
 en C++, evalúa las soluciones con el algoritmo de Kahn, ejecuta los experimentos en paralelo con múltiples hilos y
-genera reportes en formato CSV.
+genera reportes en formato CSV. \\
 
-\section{Background: Recocido Simulado}
+\section{Background: MBO}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{figures/vueloV.jpg}
+    \caption{Vuelo en V}
+\end{figure}
+
+Migrating Birds Optimization es una técnica de búsqueda local que mantiene una población de
+soluciones, \textit{aves}, dispuestas en formación en V tal que la primera solución es el líder y las demás forman
+dos alas que lo siguen~\cite{duman2012}. \\
+
+El algortimo es simple: cada ave genera vecinos de su solución y si el mejor vecino mejora su costo actual, la reemplaza. 
+Asisimimo, además de sus propios vecinos, considera los mejores vecinos que el ave de enfrente no utilizó; el líder evalúa
+$k$ vecinos propios y cada seguidor evalúa $k-x$ propios más $x$ heredados. Tras $m$ recorridos completos de la parvada, el
+líder pasa al final de la fila y el ave que estaba atras de ella, toma su lugar. En este reporte se denota por $t$ al número
+de recorridos, para no confundirle con el número de máquinas $m$ del JSSP. Los autores recomiendan que $k \ge 2x+1$. ~\cite{duman2012}. \\
+ 
+Una característica importante del algoritmo es que sólo reemplaza la solución de un ave cuando el mejor vecino mejora su costo.
+La diversidad proviene de la población paralela, de la rotación del líder y del mecanismo de compartición de soluciones, 
+no de aceptar soluciones peores.\\
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{figures/diagrama.png}
+    \caption{Representación gráfica de la estructura en formación en V de la Migrating Birds Optimization (MBO). Se distingue el ave
+    líder de las demás. Los círculos verdes denotan las soluciones propuestas por el líder. La intensidad del color simboliza el valor
+    de la función de costo: a mayor intensidad, menor costo y, por ende, una mejor solución. El esquema ilustra un ejemplo con $k = 5$ y
+    $x = 1$, en el cual cada seguidor hereda un vecino no utilizado del ave precedente.}
+\end{figure}
 
 \section{Diseño del Sistema}
 \subsection{Representación del problema}
@@ -73,5 +102,12 @@ genera reportes en formato CSV.
 \section{Dificultades y Limitaciones}
 
 \section{Conclusiones}
+
+%----------------------------------------------------------
+% Bibliografía
+%----------------------------------------------------------
+
+\printbibliography
+
 
 \end{document}

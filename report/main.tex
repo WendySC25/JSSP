@@ -41,6 +41,17 @@
 
 \section{Introducción}
 
+El Problema de Programación de Talleres de Trabajo, \textit{Job Shop Scheduling Problem} o JSSP, al igual que el TSP,
+es uno de los retos más clichés de la optimización combinatoria. Consiste en asignar trabajos a ciertas máquinas de modo que se
+minimice el tiempo global que toma terminarlos. Hay muchas varantes del probelma, todos estan caracterizados a partir de sus
+restricciones. Precisando en ello para este protecto, se definen $n$ trabajos y $m$ máquinas, donde cada trabajo consiste en una
+secuencia de $m$ operaciones, operaciones que deben ser procesadas por una máquina específica y que tienen una
+duración bien definida. Además, las máquinas sólo puede atender una operación a la vez y cada operación de un
+trabajo sólo puede comenzar cuando la anterior de ese mismo trabajo ha terminado porque tienen dependencia. Con todas
+estas restricciones, el objetivo es encontrar el orden en que cada máquina procesa sus operaciones, de modo que el
+\textit{makespan}, el instante en que termina la última operación, sea el mínimo posible. El espacio de búsqueda crece
+$(n!)^m$, ya que cada máquina puede ordenar sus $n$ operaciones de cualquier manera. Por ello no sorprende que
+el problema sea NP-Hard, no se conoce un algoritmo que garantice la solución óptima en tiempo polinomial. \\
 
 Para este segundo proyecto del Seminario de Heurísticas de Optimización Combinatoria se decidió implementar,
 de forma voluntaria, la heurística Migrating Birds Optimization (MBO). El criterio de elección, su simplicidad.

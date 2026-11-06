@@ -122,11 +122,32 @@ inicial sea siempre factible. No obstante, esto causó cierta controversia en la
 empezar con una solución totalmente aleatoria que es, por probabilidad, infactible en la mayoría de los casos. \\
  
 Con el objetivo de poder recuperar todos los datos de la salida, ésta se da como una lista de listas, donde cada elemento es una 3-tupla
-(trabajo, orden en el trabajo, duración).
+(trabajo, orden en el trabajo, duración). \\
 
 La vecindad se define intercambiando dos posiciones distintas dentro del segmento de una misma máquina. Un movimiento se describe con
 dos índices planos $(i, j)$. \\
 
+\subsection{Función de costo}
+Dada una solución, el costo se obtiene de la gráfica disyuntiva, donde los nodos son las operaciones y las aristas dirigidas unen
+cada operación con su sucesora en el trabajo y con la siguiente en la secuencia de su máquina. Asî, por construcción, cada nodo tiene a
+lo más dos aristas de entrada y dos de salida. Como se indicó en el curso, se utiliza el algoritmo de Kahn, procesando los nodos en orden
+topológico y actualizando el tiempo de término de una operación a partir del máximo de los tiempos de sus predecesores. El makespan
+es el mayor tiempo de término. Si la gráfica tiene un ciclo, los nodos involucrados y los que dependen de ellos nunca alcanzan grado de
+entrada cero. Todo el proceso tiene complejidad $\mathcal{O}(n \cdot m)$. \\
+ 
+El costo se normaliza con una cota inferior $LB$, el máximo entre la mayor suma de duraciones de un trabajo y la mayor carga
+de una máquina, y una cota superior $UB$, el valor correspondiente a procesar las operaciones de manera secuencial, una por una.
+De tal forma que el costo de una solución $X$ está dado por:
+ 
+$$
+    f(X) = \frac{\text{makespan}(X) - LB}{UB - LB} + LB \cdot c(X)
+$$
+ 
+donde $c(X)$ es el número de vértices que el algoritmo de Kahn no logra procesar a causa de ciclos. \\
+ 
+El segundo término de $f$ penaliza las soluciones con ciclos, de manera que cualquier solución factible sea preferida sobre una
+infactible. Las soluciones factibles se evalúan siempre entre 0 y 1, mientras que las infactibles quedan por encima de 1.
+ 
 \section{Experimentación y resultados}
 
 \section{Dificultades y Limitaciones}

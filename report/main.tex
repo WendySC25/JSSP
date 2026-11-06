@@ -103,25 +103,27 @@ no de aceptar soluciones peores.\\
 
 \section{Diseño del Sistema}
 \subsection{Representación del problema}
-Una instancia de JSSP estada dado por una matrix de dimensiones $n$ y $m$, donde $n$ es el número de trrabajos y $m$ el número de
-máquinas. Cada entrada es una operación cuyas específicaciones están dadas por un par (máquina, duración). Las operaciones
-a su vez se identifican usando el polinomo de redireccionamiento: $id = i \cdot m + j$, donde $i$ es el trabajo y $j$ la posición de la
-operación dentro de él. El sucesor de una operación en su trabajo es simplemente $id+1$, con excepción del último \\
+Una instancia de JSSP está dada por una matriz de dimensiones $n \times m$, donde $n$ es el número de trabajos y $m$ el número de
+máquinas. Cada entrada es una operación cuyas especificaciones están dadas por un par (máquina, duración). Las operaciones,
+a su vez, se identifican usando el polinomio de direccionamiento $id = i \cdot m + j$, donde $i$ es el trabajo y $j$ la posición de la
+operación dentro de él. El sucesor de una operación en su trabajo es simplemente $id+1$, con excepción de la última. \\
  
-Una solución es la secuencia en que cada máquina procesa sus operaciones. En este proyecto se trabajo con dos representacion diferentes.
-La versión que se encuntra en la rama refactor almacena en un único vector contiguo de tamaño $n \cdot m$ donde el segmento
+Una solución es la secuencia en que cada máquina procesa sus operaciones. En este proyecto se trabajó con dos representaciones diferentes.
+La versión que se encuentra en la rama \texttt{refactor} almacena la solución en un único vector contiguo de tamaño $n \cdot m$, donde el segmento
 $[k\cdot n, (k+1)\cdot n)$ contiene el orden de la máquina $k$, de modo que la posición $p$ de la máquina $k$ está en el índice
-$k\cdot n + p$. Como cada trabajo pasa exactamente una vez por cada máquina, todos los segmentos miden $n$. En la rama main,
-se encuntra la representacion como una permutación lineal de todas las operaciones, donde solo orden relativo dentro de cada máquina,
-por lo que muchas permutaciones codificaban la misma solución y se requería además un vector auxiliar con la posición de cada operación.
-\\
-
-De la moisma forma, la solución inicial se genera de dos formas diferentes: con una per,mutacion totalmente aleatoria y con una permutación
-con repetición. se barajea una lista donde cada trabajo aparece $m$ veces y la $j$-ésima aparición de un trabajo corresponde a su
-operación $j$, que se encola en el segmento de su máquina. Esto garantiza que respete el orden de los trabajos y que la solución
-inicial sea siempre factible. No obstante, esto causa cierta controversia en el clase, por lo que también existe la alternativa de
-empezar con una solución totalmente aleatoria que es, por probabilidad, infactible en la mayoria de los casos.\\
+$k\cdot n + p$. Como cada trabajo pasa exactamente una vez por cada máquina, todos los segmentos miden $n$. En la rama \texttt{main}
+se encuentra la representación como una permutación lineal de todas las operaciones, donde sólo importa el orden relativo dentro de cada máquina,
+por lo que muchas permutaciones codificaban la misma solución y se requerie además un vector auxiliar con la posición de cada operación. \\
  
+De la misma forma, la solución inicial se genera de dos maneras diferentes: con una permutación totalmente aleatoria y con una permutación
+con repetición. En la segunda se baraja una lista donde cada trabajo aparece $m$ veces y la $j$-ésima aparición de un trabajo corresponde a su
+operación $j$, que se agrega en el segmento de su máquina. Esto garantiza que se respete el orden de los trabajos y que la solución
+inicial sea siempre factible. No obstante, esto causó cierta controversia en la clase, por lo que también existe la alternativa de
+empezar con una solución totalmente aleatoria que es, por probabilidad, infactible en la mayoría de los casos. \\
+ 
+Con el objetivo de poder recuperar todos los datos de la salida, ésta se da como una lista de listas, donde cada elemento es una 3-tupla
+(trabajo, orden en el trabajo, duración).
+
 La vecindad se define intercambiando dos posiciones distintas dentro del segmento de una misma máquina. Un movimiento se describe con
 dos índices planos $(i, j)$. \\
 

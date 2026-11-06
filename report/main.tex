@@ -148,6 +148,65 @@ donde $c(X)$ es el número de vértices que el algoritmo de Kahn no logra proces
 El segundo término de $f$ penaliza las soluciones con ciclos, de manera que cualquier solución factible sea preferida sobre una
 infactible. Las soluciones factibles se evalúan siempre entre 0 y 1, mientras que las infactibles quedan por encima de 1.
  
+\subsection{Arquitectura del sistema}
+El sistema se organiza en tres módulos principales:
+\begin{verbatim}
+    jssp/ # Problema            InstanceJSSP, 
+                                CostFunction,
+                                SolutionJSSP, 
+                                Move,
+                                Candidate,
+                                Evaluation
+
+    mbo/  # Heurística          MBO,
+                                Bird, 
+                                MBOConfig
+
+    exp/  # Experimentación     ExperimentRunner,
+                                ExperimentReporter,
+                                RunConfig,
+                                RunResult
+\end{verbatim}
+
+La heurística se implementó únicamente en términos de la interfaz \texttt{Solution}, similar a la usada para TSP. La función 
+\texttt{proposeNeighbor} sólo evalúa el vecino y devuelve un \texttt{Candidate} con un puntero a la solución de origen, el movimiento y
+el costo, pero no construye la solución vecina. Únicamente el candidato que gana se materializa con \texttt{materializePropose}. \\
+
+\begin{lstlisting}[language=C++, caption={Interfaz Solution (simplificada).}]
+class Solution{
+    protected:
+        double cost;
+
+    public:
+        Solution(double cost = 0.0) : cost(cost) {}
+
+        virtual std::shared_ptr<const Solution> 
+        createRandom(std::mt19937& rng) const = 0;
+
+        virtual Candidate
+        proposeNeighbor(std::mt19937& rng) const = 0;
+
+        virtual std::shared_ptr<const Solution>
+        materializePropose(const Move& move, double newCost) const = 0;
+
+        virtual std::string
+        toString() const = 0;
+
+        double getCost() const{
+            return cost;
+        }
+};
+\end{lstlisting}
+
+La clase \texttt{MBO} implementa el algoritmo. La posición de enfrente de cada ave en la V se calcula con una función \texttt{frontOf}:
+el líder no tiene ave delante, las dos aves siguientes lo siguen a él, y cada una de las demás sigue a la que está dos
+lugares antes, formando las dos alas. En cada ave se evalúan $k$ vecinos propios si es el líder o $k-x$ propios más hasta $x$ heredados, 
+se ordenan por costo, se reemplaza la solución si el mejor mejora, los mejores restantes se guardan para la siguiente ave. Tras $t$
+recorridos la bandada se rota una posición a la izquierda. \\
+ 
+El módulo de experimentación sigue el mismo esquema del proyecto anterior. Por un lado, \texttt{ExperimentRunner} recibe una lista de
+\texttt{RunConfig} y las ejecuta en paralelo. Y por le otro, \texttt{ExperimentReporter} escribe una fila por corrida en un CSV.
+
 \section{Experimentación y resultados}
 
 \section{Dificultades y Limitaciones}

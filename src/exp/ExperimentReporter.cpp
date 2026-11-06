@@ -31,7 +31,7 @@ void ExperimentReporter::generateReportCSV(const std::string &filepath, const st
             << c.params.x << ','
             << c.params.t << ','
             << c.params.K << ','
-            << (r.ok ? "factible" : "no factible") << ','
+            << (r.cost <= 1 ? "factible" : "no factible") << ','
             << r.makespan << ','
             << r.nodesCycles << ','
             << r.cost << ',' 

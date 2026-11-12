@@ -35,7 +35,7 @@
     para resolver una instancia particular del Problema de Programación de Talleres de
     Trabajo (JSSP) con 40 trabajos y 40 máquinas, donde cada trabajo consta de 40 subtareas.
     Para ello se utilizó la heurística Migrating Birds Optimization, propuesta por Ekrem Duman,
-    Mitat Uysal y Ali Fuat Alkaya.
+    Mitat Uysal y Ali Fuat Alkaya. La mejor solución obtenida tiene un makespan de 165.
 \end{abstract}
 
 \begin{document}
@@ -46,24 +46,24 @@
 
 El Problema de Programación de Talleres de Trabajo, \textit{Job Shop Scheduling Problem} o JSSP, al igual que el TSP,
 es uno de los retos más clichés de la optimización combinatoria. Consiste en asignar trabajos a ciertas máquinas de modo que se
-minimice el tiempo global que toma terminarlos. Variantes de este problema hay demasidas, todas caracterizadas a partir de sus
+minimice el tiempo global que toma terminarlos. Variantes de este problema hay demasiadas, todas caracterizadas a partir de sus
 restricciones. Precisando en ello, para este proyecto se definen $n$ trabajos y $m$ máquinas, donde cada trabajo consiste en una
 secuencia de $m$ operaciones, operaciones que deben ser procesadas por una máquina específica y que tienen una
 duración bien definida. Además, las máquinas sólo pueden atender una operación a la vez y cada operación de un
-trabajo sólo puede comenzar cuando la anterior de ese mismo trabajo ha terminado, porque tienen dependencia. Con todas
+trabajo sólo puede comenzar cuando la anterior de ese mismo trabajo ha terminado. Con todas
 estas restricciones, el objetivo es encontrar el orden en que cada máquina procesa sus operaciones, de modo que el
-\textit{makespan}, el instante en que termina la última operación, sea el mínimo posible. El espacio de búsqueda crece
+\textit{makespan}, el instante en que termina la última operación, sea el mínimo posible. ~\cite{garey1976}. El espacio de búsqueda crece
 como $(n!)^m$, ya que cada máquina puede ordenar sus $n$ operaciones de cualquier manera. Por ello no sorprende que
-el problema sea NP-Hard, no se conoce un algoritmo que garantice la solución óptima en tiempo polinomial. \\
+el problema sea NP-Hard: no se conoce un algoritmo que garantice la solución óptima en tiempo polinomial. \\
 
 Para este segundo proyecto del Seminario de Heurísticas de Optimización Combinatoria se decidió implementar,
 de forma voluntaria, la heurística Migrating Birds Optimization (MBO). El criterio de elección fue su simplicidad.
 Inspirados en la formación en V de las aves migratorias, Duman, Uysal y Alkaya publicaron en 2012
-"Migrating Birds Optimization: A new metaheuristic approach and its performance on quadratic assignment problem".\\
+el artículo ``Migrating Birds Optimization: A new metaheuristic approach and its performance on quadratic assignment problem''~\cite{duman2012}.\\
 
 El sistema conserva la idea del proyecto anterior: una interfaz abstracta \texttt{Solution} que desacopla la lógica
 de la heurística del problema concreto, por lo que MBO no sabe nada de máquinas ni de trabajos. La implementación está
-en C++, evalúa las soluciones con el algoritmo de Kahn, ejecuta los experimentos en paralelo con múltiples hilos y
+en C++, evalúa las soluciones con el algoritmo de Kahn~\cite{kahn1962}, ejecuta los experimentos en paralelo con múltiples hilos y
 genera reportes en formato CSV. \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\
 
 \section{Background: MBO}
@@ -85,11 +85,11 @@ corrientes ascendentes (\textit{upwash}). Mientras que un ave en solitario debe 
 seguidores posicionarse para aprovechar directamente el \textit{upwash}. Esto disminuye considerablemente su esfuerzo
 energético y maximiza el rendimiento colectivo de la parvada. \\
 
-El algortimo es simple: cada ave genera vecinos de su solución y si el mejor vecino mejora su costo actual, la reemplaza. 
-Asisimimo, además de sus propios vecinos, considera los mejores vecinos que el ave de enfrente no utilizó; el líder evalúa
+El algoritmo es simple: cada ave genera vecinos de su solución y si el mejor vecino mejora su costo actual, la reemplaza. 
+Asimismo, además de sus propios vecinos, considera los mejores vecinos que el ave de enfrente no utilizó; el líder evalúa
 $k$ vecinos propios y cada seguidor evalúa $k-x$ propios más $x$ heredados. Tras $m$ recorridos completos de la parvada, el
 líder pasa al final de la fila y el ave que estaba atras de ella, toma su lugar. En este reporte se denota por $t$ al número
-de recorridos, para no confundirle con el número de máquinas $m$ del JSSP. Los autores recomiendan que $k \ge 2x+1$. ~\cite{duman2012}. \\
+de recorridos, para no confundirle con el número de máquinas $m$ del JSSP. Los autores recomiendan que $k \ge 2x+1$. ~\cite{duman2012}.\\
  
 Una característica importante del algoritmo es que sólo reemplaza la solución de un ave cuando el mejor vecino mejora su costo.
 La diversidad proviene de la población paralela, de la rotación del líder y del mecanismo de compartición de soluciones, 
@@ -116,7 +116,7 @@ La versión que se encuentra en la rama \texttt{refactor} almacena la solución 
 $[k\cdot n, (k+1)\cdot n)$ contiene el orden de la máquina $k$, de modo que la posición $p$ de la máquina $k$ está en el índice
 $k\cdot n + p$. Como cada trabajo pasa exactamente una vez por cada máquina, todos los segmentos miden $n$. En la rama \texttt{main}
 se encuentra la representación como una permutación lineal de todas las operaciones, donde sólo importa el orden relativo dentro de cada máquina,
-por lo que muchas permutaciones codificaban la misma solución y se requerie además un vector auxiliar con la posición de cada operación. \\
+por lo que muchas permutaciones codificaban la misma solución y se requería además un vector auxiliar con la posición de cada operación. \\
  
 De la misma forma, la solución inicial se genera de dos maneras diferentes: con una permutación totalmente aleatoria y con una permutación
 con repetición. En la segunda se baraja una lista donde cada trabajo aparece $m$ veces y la $j$-ésima aparición de un trabajo corresponde a su
@@ -127,14 +127,15 @@ empezar con una solución totalmente aleatoria que es, por probabilidad, infacti
 Con el objetivo de poder recuperar todos los datos de la salida, ésta se da como una lista de listas, donde cada elemento es una 3-tupla
 (trabajo, orden en el trabajo, duración). \\
 
-La vecindad se define intercambiando dos posiciones distintas dentro del segmento de una misma máquina. Un movimiento se describe con
-dos índices planos $(i, j)$. \\
+Se consideran dos vecindades. La vecindad aleatoria intercambia dos posiciones cualesquiera de la permutación lineal (rama \texttt{main}), 
+mientras que la vecindad de máquinas intercambia dos posiciones distintas dentro del segmento de una misma máquina y es la única vecindad que
+usa la rama \texttt{refactor}. \\
 
 \subsection{Función de costo}
 Dada una solución, el costo se obtiene de la gráfica disyuntiva, donde los nodos son las operaciones y las aristas dirigidas unen
-cada operación con su sucesora en el trabajo y con la siguiente en la secuencia de su máquina. Asî, por construcción, cada nodo tiene a
+cada operación con su sucesora en el trabajo y con la siguiente en la secuencia de su máquina. Así, por construcción, cada nodo tiene a
 lo más dos aristas de entrada y dos de salida. Como se indicó en el curso, se utiliza el algoritmo de Kahn, procesando los nodos en orden
-topológico y actualizando el tiempo de término de una operación a partir del máximo de los tiempos de sus predecesores. El makespan
+topológico y actualizando el tiempo de término de una operación a partir del máximo de los tiempos de sus predecesoras. El makespan
 es el mayor tiempo de término. Si la gráfica tiene un ciclo, los nodos involucrados y los que dependen de ellos nunca alcanzan grado de
 entrada cero. Todo el proceso tiene complejidad $\mathcal{O}(n \cdot m)$. \\
  
@@ -192,12 +193,9 @@ class Solution{
         virtual std::shared_ptr<const Solution>
         materializePropose(const Move& move, double newCost) const = 0;
 
-        virtual std::string
-        toString() const = 0;
+        virtual std::string toString() const = 0;
 
-        double getCost() const{
-            return cost;
-        }
+        double getCost() const{return cost;}
 };
 \end{lstlisting}
 
@@ -206,6 +204,10 @@ el líder no tiene ave delante, las dos aves siguientes lo siguen a él, y cada 
 lugares antes, formando las dos alas. En cada ave se evalúan $k$ vecinos propios si es el líder o $k-x$ propios más hasta $x$ heredados, 
 se ordenan por costo, se reemplaza la solución si el mejor mejora, y los mejores restantes se guardan para la siguiente ave. Tras $t$
 recorridos, la bandada se rota una posición a la izquierda. \\
+
+Además, se agregó a MBO un mecanismo de \textit{kick} para revivir la búsqueda cuando se estanca. Un contador acumula los movimientos sin
+mejora del mejor global; si rebasa el límite de $K/100$, a todas las aves se les permite hacer 3 movimientos en lugar de 1 y adoptar
+la solución resultante aun cuando sea peor que la actual. \\
  
 El módulo de experimentación sigue el mismo esquema del proyecto anterior. Por un lado, \texttt{ExperimentRunner} recibe una lista de
 \texttt{RunConfig} y las ejecuta en paralelo. Y por el otro, \texttt{ExperimentReporter} escribe una fila por corrida en un CSV.
@@ -218,11 +220,11 @@ decisión de diseño, la versión optimizada (\texttt{refactor}) fue construida 
 para construir la gráfica disyuntiva y esto resultó incompatible con la exigencia, impuesta por el curso, de partir de soluciones puramente aleatorias. 
 Sin otra opción viable, se optó por conservar ambas implementaciones de forma independiente.\\
 
-Todos los experimentos se realizaron sobre una única instancia de $40 \times 40$ (1600 operaciones), cuyos datos de entrada se encuentran en el Anexo A.
-La cota inferior calculada es $LB = 103$ y la cota superior es $UB = 3251$. \\
+Todos los experimentos se realizaron sobre una única instancia de $40 \times 40$ (1600 operaciones), cuyos datos de entrada se
+encuentran en el Anexo A. La cota inferior calculada es $LB = 103$ y la cota superior es $UB = 3251$. \\
 
-En cada corrida se registró la traza de cada mejora global contra el número de evaluaciones y al final de cada tour se reportó el mejor, el peor y el
-promedio de los costos, el costo del líder, el promedio de los seguidores y la diversidad medida como la desviación estándar de los costos de la población. \\
+En cada corrida se registró la traza de cada mejora global contra el número de evaluaciones y, al final de cada tour, se reportó el mejor, el peor y el
+promedio de los costos, el costo del líder, el promedio de los seguidores y la diversidad, medida como la desviación estándar de los costos de la población. \\
 
 Partiendo de la primera versión, la rama \texttt{main}, se probaron cuatro combinaciones de dos factores: el tipo de solución inicial (factible o aleatoria) y 
 el tipo de vecindad:\\
@@ -233,19 +235,17 @@ el tipo de vecindad:\\
     \item \textbf{D.} Solución inicial aleatoria, vecindad de máquinas.
 \end{itemize}
 
-La vecindad de máquinas es aquella que genera un vecino a partir del intercambio de dos posiciones dentro de una misma máquina. Los resultados están en la
-Tabla~\ref{tab:variantes} y las gráficas en las Figuras~\ref{fig:inf} y~\ref{fig:fact}. Cada solución es representativa de cada variante; fueron tomadas
-después de realizar 30 ejecuciones de cada variante.\\
-
+Los resultados están en la Tabla~\ref{tab:variantes} y las gráficas en las Figuras~\ref{fig:inf} y~\ref{fig:fact}. Cada variante se ejecutó
+un número reducido de veces y en la tabla se reporta una ejecución por variante. Por ello, las diferencias pequeñas entre variantes no deben interpretarse como significativas.\\
 
 Con la misma semilla y los mismos parámetros, tanto D como B parten de la misma solución infactible donde 1595 de los 1600 nodos de la gráfica
 quedan bloqueados por ciclos. La diferencia está en su forma de generar candidatos. Con la vecindad aleatoria, B, el número de nodos bloqueados desciende
-de forma casi lineal, aproximadamente 235, pero no llega a cero en las $10^7$ evaluaciones, de modo que la ejecución termina infactible. Aumentar el número de
-evaluaciones garantiza que llegue a factibilidad, pero el costo se traduce en tiempo de ejecución. En cambio, con vecindad de máquina, D, el descenso es 
-el doble de rápido y se alcanza la factibilidad con $\approx 8.85\times 10^6$ evaluaciones. La solución obtenida tiene un makespan de 260. No obstante, la mayor
-parte de la heurística se la pasa explorando en busca de una solución factible. Además, una vez alcanzada la factibilidad la parvada colapsó: todas las aves quedaron 
+de forma casi lineal, aproximadamente 235 por barrido, pero no llega a cero en las $10^7$ evaluaciones, de modo que la ejecución termina infactible. Aumentar el número de
+evaluaciones podría lograr la factibilidad, pero el costo se traduce en tiempo de ejecución. En cambio, con la vecindad de máquinas, D, el descenso es 
+casi el doble de rápido y se alcanza la factibilidad con $\approx 8.85\times 10^6$ evaluaciones. La solución obtenida tiene un makespan de 260. No obstante, la mayor
+parte del presupuesto se dedica a buscar una solución factible. Además, una vez alcanzada la factibilidad la bandada colapsó: todas las aves quedaron 
 con el mismo costo, por ello la diversidad se volvió nula. Por otra parte, tomando $10^6$ evaluaciones, la variante A terminó en 232 y la C en 235, una diferencia
-de 1.3\%. En ambas el mejor global seguía mejorando al final de la ejecución, por lo que el resultado está limitado por el número de iteraciones $K$.\\
+de 1.3\%. En ambas el mejor global seguía mejorando al final de la ejecución, por lo que el resultado está limitado por el presupuesto de evaluaciones $K$.\\
 
 \begin{figure*}[htbp]
     \centering
@@ -257,9 +257,9 @@ de 1.3\%. En ambas el mejor global seguía mejorando al final de la ejecución, 
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/graph/D_InicioNoFactible_VecinoFactible_mbo_analysis_report.png}\\
-        \small (b) D: solución inicial aleatoria, vecindad factible.
+        \small (b) D: solución inicial aleatoria, vecindad de máquinas.
     \end{minipage}
-    \caption{Solución inicial aleatoria ($n=11$, $k=3$, $x=1$, $t=10^5$, $K=10^7$).}
+    \caption{Solución inicial aleatoria ($n=11$, $k=3$, $x=1$, $t=10^5$, $K=10^7$)}
     \label{fig:inf}
 \end{figure*}
 
@@ -273,23 +273,23 @@ de 1.3\%. En ambas el mejor global seguía mejorando al final de la ejecución, 
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/graph/C_InicioFactible_VecinoFactible_mbo_analysis_report.png}\\
-        \small (b) C: solución inicial factible, vecindad factible.
+        \small (b) C: solución inicial factible, vecindad de máquinas.
     \end{minipage}
-    \caption{Solución inicial factible ($n=51$, $k=5$, $x=1$, $t=10^3$, $K=10^6$). Mismos paneles que en la Figura~\ref{fig:inf}.}
+    \caption{Solución inicial factible ($n=51$, $k=5$, $x=1$, $t=10^3$, $K=10^6$).}
     \label{fig:fact}
 \end{figure*}
 
 Durante la experimentación se observó que los parámetros apropiados dependen de dónde se parte. Cuando se inicia desde una solución aleatoria, el problema es
-de reparación, por lo que conviene usar pocas aves y muchos recorridos antes de rotar para que la búsqueda converja lo más rápido posible; una explicación a esto es
+de reparación, por lo que conviene usar pocas aves y muchos recorridos antes de rotar para que la búsqueda converja lo más rápido posible; una posible explicación es
 que en la región infactible son pocos los vecinos que mejoran, de modo que el mecanismo de beneficio aporta poco y resulta preferible concentrar las evaluaciones en
 pocos individuos para que cada uno avance más. En cambio, cuando se parte de una solución factible el problema es de calidad, por lo que conviene incrementar el número
-de aves para mantener diversidad y, por lo tanto, un menor $t$ para que cada ave pueda ocupar la posición del líder al menos una vez. En todas
-las configuraciones se usó $x=1$, el valor que el artículo original reporta como el mejor.\\
+de aves para mantener diversidad y, por lo tanto, un menor $t$ para que un mayor número de aves pueda ocupar la posición del líder. En todas
+las configuraciones se usó $x=1$, el valor que el artículo original reporta como el mejor. Cabe aclarar que esta observación proviene de la exploración manual y que las
+configuraciones de la Tabla~\ref{tab:variantes} difieren entre tipos de arranque, por lo que la comparación no aísla el efecto de $n$.\\
 
-Un patrón recurrente fue el estancamiento, cuando las iteraciones se consumían sin mejorar el mejor global. En la variante D, por ejemplo,
-la diversidad cae a cero y el resto de la ejecución es inútil. Para revivir la búsqueda se agregó un mecanismo de \textit{kick}:
-que cuenta $K/100$ movimientos sin mejora, de tal forma que si rebasa el límite, a todas las aves se les permite hacer 3 movimientos en lugar de 1. Adopta la solución
-aun cuando esta sea peor que la actual. Con esto se obtuvo el mejor resultado de todo el proyecto. La mejor solución, de makespan 165, apareció en la
+Un patrón recurrente fue el estancamiento, cuando el presupuesto de evaluaciones se consumía sin mejorar el mejor global. En la variante D, por ejemplo,
+la diversidad cae a cero y el resto de la ejecución es inútil. Para revivir la búsqueda se agregó el mecanismo de \textit{kick} descrito en la sección de diseño.
+Con esto se obtuvo el mejor resultado de todo el proyecto. La mejor solución, de makespan 165, apareció en la
 rama \texttt{refactor} con $n=501$, $k=5$, $x=1$, $t=15$ y $K=10^7$ en 30 minutos con la semilla 68121239.\\
 
 La secuencia de trabajos por máquina se encuentra en la Tabla~\ref{fig:solucion}, su evolución en la Figura~\ref{fig:best} y su diagrama de Gantt en la Figura~\ref{fig:gantt40}.
@@ -383,10 +383,10 @@ La secuencia de trabajos por máquina se encuentra en la Tabla~\ref{fig:solucion
 \end{figure}
 
 La Tabla~\ref{tab:hitos} muestra en qué momento de la ejecución se alcanzó cada makespan. El descenso inicial es muy rápido: con $50\,000$ evaluaciones
-(0.5\% de $K$) ya se tiene un makespan de 235, mejor que el que las variantes A y C lograron con todas sus iteraciones completas, y con $2.2\times 10^5$ se baja de 204.
-Después el avance se vuelve lento, y entre los tours 146 y 210 ocurre una meseta de 64 tours ($\approx 1.9\times 10^6$ evaluaciones), con el mejor fijo en 171. 
-La búsqueda logra salir de ella y baja a 166 y finalmente a 165, aunque esta última mejora ocurre con el 98.6\% de la ejecución, por lo que es probable que un mayor
-$K$ siguiera mejorando el resultado. En total, el mejor global mejoró en 40 de los 323 tours que se lograron completar y muere por el número de iteraciones.
+(0.5\% de $K$) ya se tiene un makespan de 235, comparable al que las variantes A (232) y C (235) lograron con todo su presupuesto, y con $2.2\times 10^5$ se llega a 204.
+Después el avance se vuelve lento, y entre los barridos 146 y 210 ocurre una meseta de 64 barridos ($\approx 1.9\times 10^6$ evaluaciones), con el mejor fijo en 171. 
+La búsqueda logra salir de ella y baja a 166 y finalmente a 165, aunque esta última mejora ocurre con el 98.6\% del presupuesto, por lo que es probable que un mayor
+$K$ siguiera mejorando el resultado. En total, el mejor global mejoró en 40 de los 323 barridos que se lograron completar, y la ejecución termina al agotarse el presupuesto $K$.
 
 \begin{table}[h]
     \centering
@@ -407,10 +407,10 @@ $K$ siguiera mejorando el resultado. En total, el mejor global mejoró en 40 de 
      \label{tab:hitos}
 \end{table}
 
-Las gráficas de la Figura~\ref{fig:best} permiten observar dos fenómenos. Primero, el líder se mantiene sistemáticamente por encima del promedio de los seguidores; es peor
-que el promedio de sus soluciones, probablemente porque es el único que no recibe vecinos de nadie y depende de sus $k$ vecinos propios, mientras que los seguidores 
-aprovechan el mecanismo de beneficio. Segundo, a diferencia de la variante D, la diversidad decrece pero no se anula, por el \textit{kick}. Así, el promedio del costo termina concentrado
-entre 165 y 171.
+Las gráficas de la Figura~\ref{fig:best} permiten observar dos fenómenos. Primero, el líder se mantiene sistemáticamente por encima del promedio de los seguidores, es decir, su costo es peor,
+probablemente porque es el único que no recibe vecinos de nadie y depende de sus $k$ vecinos propios, mientras que los seguidores 
+aprovechan el mecanismo de beneficio. Segundo, a diferencia de la variante D, la diversidad decrece pero no se anula, posiblemente por el \textit{kick}. Así, la bandada termina concentrada
+entre los makespans 165 y 171.\\
 
 
 \section{Dificultades y Limitaciones}

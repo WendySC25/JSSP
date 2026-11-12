@@ -204,62 +204,62 @@ class Solution{
 La clase \texttt{MBO} implementa el algoritmo. La posición de enfrente de cada ave en la V se calcula con una función \texttt{frontOf}:
 el líder no tiene ave delante, las dos aves siguientes lo siguen a él, y cada una de las demás sigue a la que está dos
 lugares antes, formando las dos alas. En cada ave se evalúan $k$ vecinos propios si es el líder o $k-x$ propios más hasta $x$ heredados, 
-se ordenan por costo, se reemplaza la solución si el mejor mejora, los mejores restantes se guardan para la siguiente ave. Tras $t$
-recorridos la bandada se rota una posición a la izquierda. \\
+se ordenan por costo, se reemplaza la solución si el mejor mejora, y los mejores restantes se guardan para la siguiente ave. Tras $t$
+recorridos, la bandada se rota una posición a la izquierda. \\
  
 El módulo de experimentación sigue el mismo esquema del proyecto anterior. Por un lado, \texttt{ExperimentRunner} recibe una lista de
-\texttt{RunConfig} y las ejecuta en paralelo. Y por le otro, \texttt{ExperimentReporter} escribe una fila por corrida en un CSV.
+\texttt{RunConfig} y las ejecuta en paralelo. Y por el otro, \texttt{ExperimentReporter} escribe una fila por corrida en un CSV.
 
 \section{Experimentación y resultados}
 Como se mencionó anteriormente, el desarrollo del proyecto se dividió en dos ramas (\texttt{main} y \texttt{refactor}), 
 diferenciadas por la representación del espacio de búsqueda y las estructuras de datos asociadas; aunque inicialmente se contempló unificar ambas
 vertientes mediante una bandera de configuración, por restricciones de tiempo no fue posible llevarlo a los hechos. Además, por una mala 
-decisión de diseño, la versión optimizada, (\texttt{refactor}), fue construida para que las la función de costo usará la estrutura de la solución
-para contruir la gráfica distuntiva y esto resultó incompatible con la exigencia, impuesta por el curso, a partir de soluciones puramente aleatorias. 
+decisión de diseño, la versión optimizada (\texttt{refactor}) fue construida para que la función de costo usara la estructura de la solución
+para construir la gráfica disyuntiva y esto resultó incompatible con la exigencia, impuesta por el curso, de partir de soluciones puramente aleatorias. 
 Sin otra opción viable, se optó por conservar ambas implementaciones de forma independiente.\\
 
-Todos los experimentos se realizaron sobre una única instancia de $40 \times 40$ (1600 operaciones), cuyos datos se entrada encuentran en el Anexo A.
-La cota inferior calulada es $LB = 103$ y la cota superior es $UB = 3251$. \\
+Todos los experimentos se realizaron sobre una única instancia de $40 \times 40$ (1600 operaciones), cuyos datos de entrada se encuentran en el Anexo A.
+La cota inferior calculada es $LB = 103$ y la cota superior es $UB = 3251$. \\
 
 En cada corrida se registró la traza de cada mejora global contra el número de evaluaciones y al final de cada tour se reportó el mejor, el peor y el
 promedio de los costos, el costo del líder, el promedio de los seguidores y la diversidad medida como la desviación estándar de los costos de la población. \\
 
-Partiendo de la primer versión, la rama main, se probaron cuatro combinaciones de dos factores: el tipo de solución inicial (factible o aleatorio) y 
+Partiendo de la primera versión, la rama \texttt{main}, se probaron cuatro combinaciones de dos factores: el tipo de solución inicial (factible o aleatoria) y 
 el tipo de vecindad:\\
 \begin{itemize}
     \item \textbf{A.} Solución inicial factible, vecindad aleatoria (intercambio de dos posiciones aleatorias).
     \item \textbf{B.} Solución inicial aleatoria, vecindad aleatoria.
-    \item \textbf{C.} Solución inicial factible, vecindad de maquinas.
-    \item \textbf{D.} Solución inicial aleatoria, vecindad de maquinas.
+    \item \textbf{C.} Solución inicial factible, vecindad de máquinas.
+    \item \textbf{D.} Solución inicial aleatoria, vecindad de máquinas.
 \end{itemize}
 
-La vencidad de maquinas es aquella que genera un vecino del intercambio de dos posiciones dentro de una misma máquina. Los resultados estan la
-Tabla~\ref{tab:variantes} y las  gráficas en las Figuras~\ref{fig:inf} y~\ref{fig:fact}. Cada solución es representativa de cada variante, fueron tomas
+La vecindad de máquinas es aquella que genera un vecino a partir del intercambio de dos posiciones dentro de una misma máquina. Los resultados están en la
+Tabla~\ref{tab:variantes} y las gráficas en las Figuras~\ref{fig:inf} y~\ref{fig:fact}. Cada solución es representativa de cada variante; fueron tomadas
 después de realizar 30 ejecuciones de cada variante.\\
 
 
 Con la misma semilla y los mismos parámetros, tanto D como B parten de la misma solución infactible donde 1595 de los 1600 nodos de la gráfica
-quedan bloqueados por ciclos. La diferencia está en su forma de generar a sus candidatos. Con la vecindad aleatoria, B, el número de nodos bloqueados desciende
-de forma casi lineal, aproximadamente 235 pero no llega a cero en los $10^7$ evaluaciones, de modo que la ejecución termina infactible. Aumentar el número de
-evaluaciones garantiza que llegue a factibilidad, pero el costo se traduce a tiempo de ejecución. En cambio, con vecindad de maquina, D. el descenso es el
+quedan bloqueados por ciclos. La diferencia está en su forma de generar candidatos. Con la vecindad aleatoria, B, el número de nodos bloqueados desciende
+de forma casi lineal, aproximadamente 235, pero no llega a cero en las $10^7$ evaluaciones, de modo que la ejecución termina infactible. Aumentar el número de
+evaluaciones garantiza que llegue a factibilidad, pero el costo se traduce en tiempo de ejecución. En cambio, con vecindad de máquina, D, el descenso es 
 el doble de rápido y se alcanza la factibilidad con $\approx 8.85\times 10^6$ evaluaciones. La solución obtenida tiene un makespan de 260. No obstante, la mayor
-parte de la heuritica se la pasa explorando en busca de una solución factible. Además, una vez alcanzada la factibilidad la parvada colapsó: todas aves quedaron 
+parte de la heurística se la pasa explorando en busca de una solución factible. Además, una vez alcanzada la factibilidad la parvada colapsó: todas las aves quedaron 
 con el mismo costo, por ello la diversidad se volvió nula. Por otra parte, tomando $10^6$ evaluaciones, la variante A terminó en 232 y la C en 235, una diferencia
-de 1.3\%.  En ambas el mejor global seguía mejorando al final de la ejecución, por lo que el resultado está limitado por el número de iteraciiones $K$.\\
+de 1.3\%. En ambas el mejor global seguía mejorando al final de la ejecución, por lo que el resultado está limitado por el número de iteraciones $K$.\\
 
 \begin{figure*}[htbp]
     \centering
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/graph/B_InicioNoFactible_VecinoRandom_mbo_analysis_report.png}\\
-        \small (a) B: solución inicialaleatorio, vecindad aleatoria.
+        \small (a) B: solución inicial aleatoria, vecindad aleatoria.
     \end{minipage}\hfill
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/graph/D_InicioNoFactible_VecinoFactible_mbo_analysis_report.png}\\
-        \small (b) D: solución inicialaleatorio, vecindad factible.
+        \small (b) D: solución inicial aleatoria, vecindad factible.
     \end{minipage}
-    \caption{Solución inicialaleatorio ($n=11$, $k=3$, $x=1$, $t=10^5$, $K=10^7$).}
+    \caption{Solución inicial aleatoria ($n=11$, $k=3$, $x=1$, $t=10^5$, $K=10^7$).}
     \label{fig:inf}
 \end{figure*}
 
@@ -268,31 +268,31 @@ de 1.3\%.  En ambas el mejor global seguía mejorando al final de la ejecución,
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/graph/A_InicioFactible_VecinoAleatorio_mbo_analysis_report.png}\\
-        \small (a) A: solución inicialfactible, vecindad aleatoria.
+        \small (a) A: solución inicial factible, vecindad aleatoria.
     \end{minipage}\hfill
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/graph/C_InicioFactible_VecinoFactible_mbo_analysis_report.png}\\
-        \small (b) C: solución inicialfactible, vecindad factible.
+        \small (b) C: solución inicial factible, vecindad factible.
     \end{minipage}
-    \caption{Solución inicialfactible ($n=51$, $k=5$, $x=1$, $t=10^3$, $K=10^6$). Mismos paneles que en la Figura~\ref{fig:inf}.}
+    \caption{Solución inicial factible ($n=51$, $k=5$, $x=1$, $t=10^3$, $K=10^6$). Mismos paneles que en la Figura~\ref{fig:inf}.}
     \label{fig:fact}
 \end{figure*}
 
-Durante la experimentación se observó que los parámetros apropiados dependen de dónde se parte. Cuando se iniciq desde una solución aleatoria, el problema es
+Durante la experimentación se observó que los parámetros apropiados dependen de dónde se parte. Cuando se inicia desde una solución aleatoria, el problema es
 de reparación, por lo que conviene usar pocas aves y muchos recorridos antes de rotar para que la búsqueda converja lo más rápido posible; una explicación a esto es
 que en la región infactible son pocos los vecinos que mejoran, de modo que el mecanismo de beneficio aporta poco y resulta preferible concentrar las evaluaciones en
 pocos individuos para que cada uno avance más. En cambio, cuando se parte de una solución factible el problema es de calidad, por lo que conviene incrementar el número
-de aves para mantener diversidad y por lo tanto un menor $t$ para que al menos cada ave pueda ocupar la posición el líder al menos una vez. En todas
+de aves para mantener diversidad y, por lo tanto, un menor $t$ para que cada ave pueda ocupar la posición del líder al menos una vez. En todas
 las configuraciones se usó $x=1$, el valor que el artículo original reporta como el mejor.\\
 
-Un patrón recurrente fue el estancamiento, cuando las las iteraciones se consumumían sin mejorar el mejor global. En la variante D, por ejemplo,
+Un patrón recurrente fue el estancamiento, cuando las iteraciones se consumían sin mejorar el mejor global. En la variante D, por ejemplo,
 la diversidad cae a cero y el resto de la ejecución es inútil. Para revivir la búsqueda se agregó un mecanismo de \textit{kick}:
-que cuenta K/100 de movienitos sin mejora, de tal forma que si rebasa el limite, a todos las aves se lees permite hacer 3 movientos en lugar de 1. Adopta la solución
-aún cuando está sea peor que la actual. Con esto se obtuvo el mejor resultado de todo el proyecto. La mejor solución, de makespan 165 apareció en la
+que cuenta $K/100$ movimientos sin mejora, de tal forma que si rebasa el límite, a todas las aves se les permite hacer 3 movimientos en lugar de 1. Adopta la solución
+aun cuando esta sea peor que la actual. Con esto se obtuvo el mejor resultado de todo el proyecto. La mejor solución, de makespan 165, apareció en la
 rama \texttt{refactor} con $n=501$, $k=5$, $x=1$, $t=15$ y $K=10^7$ en 30 minutos con la semilla 68121239.\\
 
-La secuencia de trabajos por máquina se encuntra en la Tabla~\ref{fig:solucion}, su evolución en la Figura~\ref{fig:best} y su diagrama de Gannt ~\ref{fig:gantt40}.
+La secuencia de trabajos por máquina se encuentra en la Tabla~\ref{fig:solucion}, su evolución en la Figura~\ref{fig:best} y su diagrama de Gantt en la Figura~\ref{fig:gantt40}.
 
 \begin{table*}[htbp]
     \centering
@@ -383,10 +383,10 @@ La secuencia de trabajos por máquina se encuntra en la Tabla~\ref{fig:solucion}
 \end{figure}
 
 La Tabla~\ref{tab:hitos} muestra en qué momento de la ejecución se alcanzó cada makespan. El descenso inicial es muy rápido: con $50\,000$ evaluaciones
-(0.5\% de $K$) ya se tiene un makespan de 235, mejor que el que las variantes A y C lograron con todas sus iteciones completas y con $2.2\times 10^5$ se baja de 204.
-Después el avance se vuelve lento, y entre los tours 146 y 210 ocurre una meseta de 64 stour, $\approx 1.9\times 10^6$ evaluaciones, con el mejor fijo en 171. 
+(0.5\% de $K$) ya se tiene un makespan de 235, mejor que el que las variantes A y C lograron con todas sus iteraciones completas, y con $2.2\times 10^5$ se baja de 204.
+Después el avance se vuelve lento, y entre los tours 146 y 210 ocurre una meseta de 64 tours ($\approx 1.9\times 10^6$ evaluaciones), con el mejor fijo en 171. 
 La búsqueda logra salir de ella y baja a 166 y finalmente a 165, aunque esta última mejora ocurre con el 98.6\% de la ejecución, por lo que es probable que un mayor
-$K$ siguiera mejorando el resultado. En total, el mejor global mejoró en 40 de los 323 tour que se lograron completar y muere por el número de iteraciones.
+$K$ siguiera mejorando el resultado. En total, el mejor global mejoró en 40 de los 323 tours que se lograron completar y muere por el número de iteraciones.
 
 \begin{table}[h]
     \centering
@@ -407,14 +407,14 @@ $K$ siguiera mejorando el resultado. En total, el mejor global mejoró en 40 de 
      \label{tab:hitos}
 \end{table}
 
-Las gráficas la Figura~\ref{fig:best} permiten observar dos fenómenos. Primero, el líder se mantiene sistemáticamente por encima del promedio de los seguidores, es peor
-que el promedio de sus soluciones, problamenet porque es el único que no recibe vecinos de nadie y depende de sus $k$ vecinos propios, mientras que los seguidores 
-aprovechan el mecanismo de beneficio. Segundo, a diferencia de la variante D, la diversidad decrece pero no se anula, por el kick. Así el promedio del costo termina concentrada
+Las gráficas de la Figura~\ref{fig:best} permiten observar dos fenómenos. Primero, el líder se mantiene sistemáticamente por encima del promedio de los seguidores; es peor
+que el promedio de sus soluciones, probablemente porque es el único que no recibe vecinos de nadie y depende de sus $k$ vecinos propios, mientras que los seguidores 
+aprovechan el mecanismo de beneficio. Segundo, a diferencia de la variante D, la diversidad decrece pero no se anula, por el \textit{kick}. Así, el promedio del costo termina concentrado
 entre 165 y 171.
 
 
 \section{Dificultades y Limitaciones}
-Lamentablemente, esta sección constituye una de las partes más extensas de este proyecto. 
+Lamentablemente, esta sección constituye una de las partes más extensas de este proyecto.
 \section{Conclusiones}
 
 %----------------------------------------------------------

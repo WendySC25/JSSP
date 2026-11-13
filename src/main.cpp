@@ -1,44 +1,37 @@
 #include <iostream>
 
-#include "jssp/InstanceJSSP.hpp"
-#include "exp/ExperimentRunner.hpp"
-#include "exp/ExperimentReporter.hpp"
+#include "app/App.hpp"
+#include "app/Args.hpp"
 
-int main() {
+inline std::string usage() {
+    return
+    R"(Usage: ./jssp_runner -instance <path> [options]
 
+    -instance <path>   Instance file (required)
+    -out <path>        Output CSV (default ./data/output/<timestamp>_<label>.csv)
+    -label <text>      Experiment label (default MBO)
+    -nRuns <N>         Number of runs, with seeds seed, seed+1, ... (default 1)
+    -seed <S>          Seed (default 1)
+    -threads <N>       Threads (0 = automatic)
+
+    -n <birds>  -k <neighbors>  -x <shared>  -t <tours>  -K <evaluations>
+    )";
+}
+
+int main(int argc, char** argv) {
     try {
-        std::string instancePath = "./data/JSSP_100_100.txt";
-        auto instance = InstanceJSSP::loadFromFile(instancePath);
+        auto opts = parseArgs(argc, argv);
 
-        ExperimentRunner runner(instance);
-        RunConfig baseConfig;
-    
-        baseConfig.label = "Prueba_MBO_100_100_11aves_inicio_factible";
-        MBOconfig params;
-        params.n = 11;
-        params.K = 5000000;
-        baseConfig.params = params;
+        if(!opts) {
+            std::cerr << "\n" << usage();
+            return 1;
+        }
 
-        std::vector<RunConfig> configs = runner.assignSeeds(baseConfig, 1, 100);
-
-        std::cout << "Running \n";
-        std::vector<RunResult> results = runner.run(configs, 0);
-
-        std::cout << "End!\n";
-        ExperimentReporter reporter;
-        reporter.generateReportCSV(runner.nowTimestamp() + "resultados_experimento.csv", results);
-
-        int makespan = 10000000;
-    
-        for(auto r : results) std::min(makespan, r.makespan);
-        std::cout << "Makespan: " << makespan << '\n';
-
-        std::cout << "CVS ready'!\n";
+        App app;
+        return app.run(*opts);
 
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << '\n';
         return 1;
     }
-
-    return 0;
 }

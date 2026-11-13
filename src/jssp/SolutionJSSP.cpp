@@ -1,8 +1,9 @@
 #include "jssp/SolutionJSSP.hpp"
 
-SolutionJSSP::SolutionJSSP(std::shared_ptr<CostFunction> costFunc, std::mt19937& rng) : 
+SolutionJSSP::SolutionJSSP(std::shared_ptr<CostFunction> costFunc, std::mt19937& rng, bool randomStart) : 
 Solution(0.0),
 costFunction(std::move(costFunc)),
+randomStart(randomStart),
 order(generateRandomOrder(costFunction->getInstance(), rng)) {
     posOfOp.resize(this->order.size());
     for (int id = 0; id < this->order.size(); id++) 
@@ -18,20 +19,21 @@ order(std::move(ord)),
 posOfOp(std::move(pos)) {}
 
 std::shared_ptr<const Solution> SolutionJSSP::createRandom(std::mt19937& rng) const {
-    return std::make_shared<const SolutionJSSP>(costFunction, rng);
+    return std::make_shared<const SolutionJSSP>(costFunction, rng, randomStart);
 }
 
 std::vector<int> SolutionJSSP::generateRandomOrder(const InstanceJSSP& inst, std::mt19937& rng) {
-    // std::vector<int> jobs(inst.getNumOps());
-    // std::iota(jobs.begin(), jobs.end(), 0);
-    // std::shuffle(jobs.begin(), jobs.end(), rng);
-    // return jobs;
+    if (randomStart) {
+        std::vector<int> jobs(inst.getNumOps());
+        std::iota(jobs.begin(), jobs.end(), 0);
+        std::shuffle(jobs.begin(), jobs.end(), rng);
+        return jobs;
+    }
 
-    std::vector<int> jobs;
-    jobs.reserve(inst.getNumOps());
-    
     int n = inst.getN();
     int m = inst.getM();
+    std::vector<int> jobs;
+    jobs.reserve(inst.getNumOps());
     for (int i = 0; i < n; ++i)
         for (int j = 0; j < m; ++j) jobs.push_back(i);
 

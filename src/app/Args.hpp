@@ -27,6 +27,7 @@ struct Args {
     int nRuns   = 1;         
     int seed    = 1;
     int threads = 0;
+    bool randomStart = false;
 
     MBOconfig params {
         .n = 51,
@@ -41,6 +42,12 @@ inline std::optional<Args> parseArgs(int argc, char** argv) {
     Args a;
     for(int i = 1; i < argc; i++) {
         std::string arg = argv[i];
+
+        if(arg == "-startRandom") {
+            a.randomStart = true;
+            continue;
+        }
+
         if(i + 1 >= argc) {
             std::cerr << "Missing value " << arg << "\n";
             return std::nullopt;

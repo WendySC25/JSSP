@@ -27,7 +27,7 @@ RunResult ExperimentRunner::runOne(const RunConfig& config) const {
     try {
         std::mt19937 randSeed(config.seed);
         auto cf = std::make_shared<CostFunction>(instance);
-        auto solutionJSSP = std::make_shared<const SolutionJSSP>(cf, randSeed);
+        auto solutionJSSP = std::make_shared<const SolutionJSSP>(cf, randSeed, config.randomStart);
 
         MBO mbo(solutionJSSP, config.params);
         auto t0 = std::chrono::steady_clock::now();

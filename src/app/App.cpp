@@ -16,6 +16,7 @@ int App::run(const Args& args) {
     RunConfig base;
     base.label = args.label;
     base.params = args.params;
+    base.randomStart = args.randomStart;
     
     std::vector<RunConfig> allConfigs;
     switch (args.mode) {

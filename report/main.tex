@@ -64,18 +64,18 @@ el artículo ``Migrating Birds Optimization: A new metaheuristic approach and it
 El sistema conserva la idea del proyecto anterior: una interfaz abstracta \texttt{Solution} que desacopla la lógica
 de la heurística del problema concreto, por lo que MBO no sabe nada de máquinas ni de trabajos. La implementación está
 en C++, evalúa las soluciones con el algoritmo de Kahn~\cite{kahn1962}, ejecuta los experimentos en paralelo con múltiples hilos y
-genera reportes en formato CSV. \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\
+genera reportes en formato CSV.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{figures/vueloV.jpg}
+    \caption{Vuelo en V}
+\end{figure}
 
 \section{Background: MBO}
 Migrating Birds Optimization es una técnica de búsqueda local que mantiene una población de
 soluciones, \textit{aves}, dispuestas en formación en V tal que la primera solución es el líder y las demás forman
 dos alas que lo siguen~\cite{duman2012}. \\
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\linewidth]{figures/vueloV.jpg}
-    \caption{Vuelo en V}
-\end{figure}
 
 El fundamento de esta heurística emula el comportamiento migratorio de las aves y su eficiencia aerodinámica~\cite{duman2012}:
 el perfil del ala obliga al flujo superior a desplazarse con mayor velocidad que el inferior, creando una diferencia de presiones
@@ -172,10 +172,6 @@ El sistema se organiza en tres módulos principales:
                                 RunResult
 \end{verbatim}
 
-La heurística se implementó únicamente en términos de la interfaz \texttt{Solution}, similar a la usada para TSP. La función 
-\texttt{proposeNeighbor} sólo evalúa el vecino y devuelve un \texttt{Candidate} con un puntero a la solución de origen, el movimiento y
-el costo, pero no construye la solución vecina. Únicamente el candidato que gana se materializa con \texttt{materializePropose}. \\
-
 \begin{lstlisting}[language=C++, caption={Interfaz Solution (simplificada).}]
 class Solution{
     protected:
@@ -198,6 +194,10 @@ class Solution{
         double getCost() const{return cost;}
 };
 \end{lstlisting}
+
+La heurística se implementó únicamente en términos de la interfaz \texttt{Solution}, similar a la usada para TSP. La función 
+\texttt{proposeNeighbor} sólo evalúa el vecino y devuelve un \texttt{Candidate} con un puntero a la solución de origen, el movimiento y
+el costo, pero no construye la solución vecina. Únicamente el candidato que gana se materializa con \texttt{materializePropose}. \\
 
 La clase \texttt{MBO} implementa el algoritmo. La posición de enfrente de cada ave en la V se calcula con una función \texttt{frontOf}:
 el líder no tiene ave delante, las dos aves siguientes lo siguen a él, y cada una de las demás sigue a la que está dos
@@ -414,9 +414,46 @@ entre los makespans 165 y 171.\\
 
 
 \section{Dificultades y Limitaciones}
-Lamentablemente, esta sección constituye una de las partes más extensas de este proyecto.
-\section{Conclusiones}
+Lamentablemente, esta sección constituye una de las partes más extensas de este proyecto. \\
 
+El inicio del proyecto resultó complejo, comenzando por la propia definición del problema. Desde la presentación inicial hasta fechas recientes, las
+especificaciones sufrieron varias modificaciones. Gran parte del tiempo disponible se dedicaron a experimentar con una instancia
+de 100 máquinas y 100 trabajos. Sin embargo, dichos resultados no se incluyeron en este reporte debido a que dicha instancia fue descartada posteriormente. De manera
+paralela, el desarrollo se inició originalmente en Julia. Aunque su documentación resulta sumamente clara, existían diversos factores en contra, tales como la curva de
+aprendizaje y el riesgo de añadir complejidad innecesaria al entorno de trabajo, por ello, la decisión más razonable fue abandonar dicho camino y regresar a C++. En conjunto,
+estas circunstancias representaron un contratiempo considerable para siquiera iniciar del proyecto.\\
+
+En una etapa inicial, se consideró replicar la arquitectura utilizada previamente para el Problema del Viajante (TSP), pero al poco rato de comenzar, resultó evidente que
+la naturaleza del JSSP demandaba un diseño completamente distinto. El principal desafío residió en la representación de la solución: mientras que en el TSP la
+clase concreta encapsulaba de manera directa tanto la generación de vecinos como la evaluación de costos, una operación trivial que se limitaba a sumar aristas
+sobre un arreglo plano, el JSSP introduce una complejidad operativa muy superior. Por un lado, la función de costo requiere estructuras auxiliares como pilas,
+vectores y buffers y el algoritmo MBO exige que parte de estos estados se conserven y compartan. Para abordar este requerimiento, se optó por desacoplar por
+completo la función de evaluación de la interfaz de la solución.\\
+
+Tras implementar el sistema y realizar la primera refactorización, se introdujo en clase el concepto de la ruta crítica. Así, nuevamente, la generación de
+vecindarios demostró ser un factor determinante, tal como ocurrió en el TSP con operadores como \textit{swap} o \textit{2-opt}. Aquí reside una de las limitaciones más
+importantes de este proyecto: la falta de profundización teórica previa. Se tiene conocimiento de vecindarios avanzados diseñados específicamente para este problema,
+como el $N5$ de Nowicki y Smutnicki, que sólo intercambia operaciones en los extremos de los bloques de la ruta crítica y no puede introducir ciclos~\cite{nowicki1996}, o
+el $N6$ y el $N7$, que mueven operaciones dentro de los bloques bajo condiciones suficientes de factibilidad~\cite{balas1998,zhang2007}. No obstante, su
+incorporación tuvo que descartarse debido a las restricciones de tiempo y a su complejidad de implementación sobre la arquitectura existente.\\
+
+Finalmente, es necesario reconocer las limitaciones experimentales de esta iteración. El tiempo dedicado a la experimentación y a la sintonización de parámetros
+fue sumamente acotado: cada variante se ejecutó pocas veces, la mejor configuración difiere de las variantes A y C en cuatro factores a la vez ($n$, $t$, $K$ y
+el \textit{kick}), por lo que su ventaja no puede atribuirse sólo al \textit{kick}. En consecuencia, si bien el
+sistema actual opera como un prototipo funcional, su rendimiento y escalabilidad ante instancias de mayor tamaño resultan claramente insuficientes.\\
+
+\section{Conclusiones}
+La solución encontrada dista de ser óptima y el tiempo de cómputo invertido tampoco resulta razonablemente competitivo. Con el solver CP-SAT de
+OR-Tools~\cite{ortools}, con un límite de 5 minutos, se obtuvo una solución de makespan 135 y una cota inferior de 117. El óptimo de esta instancia se encuentra,
+por tanto, entre 117 y 135, y el mejor resultado obtenido en este proyecto, 165 que queda entre $22.2\%$  y $41.0\%$ por encima de él, además de haber requerido
+seis veces más tiempo.\\
+
+A partir de las observaciones experimentales, una mejora evidente para el sistema sería adaptar dinámicamente los parámetros durante la ejecución: tras alcanzar
+la región factible, incrementar el número de aves $n$ y reducir los recorridos $t$ para fomentar la diversidad y explotar con mayor profundidad el espacio factible.
+Asimismo, la búsqueda se vería beneficiada al incorporar operadores de vecindad con movimientos sobre la ruta crítica. Otra observación para futuras mejoras
+surgió al diseñar pruebas unitarias: Kahn y Tarjan~\cite{tarjan1972} no miden lo mismo, pues el conteo de Kahn incluye también a los dependientes de un ciclo,
+por lo que siempre es mayor o igual al de Tarjan. Contabilizar únicamente los nodos que realmente si pertenecen a un ciclo daría una penalización con mejor criterio. 
+A nivel personal, el resultado no resulta satisfactorio y evidencia fallas estructurales en las decisiones de diseño iniciales. % El siguiente proyecto compensará todas esas fallas.
 %----------------------------------------------------------
 % Bibliografía
 %----------------------------------------------------------

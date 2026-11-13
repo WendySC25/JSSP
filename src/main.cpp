@@ -13,6 +13,7 @@ inline std::string usage() {
     -nRuns <N>         Number of runs, with seeds seed, seed+1, ... (default 1)
     -seed <S>          Seed (default 1)
     -threads <N>       Threads (0 = automatic)
+    -mode <mode>       single|random|seeds (default single)
 
     -n <birds>  -k <neighbors>  -x <shared>  -t <tours>  -K <evaluations>
     )";

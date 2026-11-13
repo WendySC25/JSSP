@@ -13,21 +13,27 @@ int App::run(const Args& args) {
     auto instance = InstanceJSSP::loadFromFile(args.instancePath);
     ExperimentRunner runner(instance);
 
-    std::vector<RunConfig> configs;
-    for(int i = 0; i < args.nRuns; i++) {
-        RunConfig cfg;
-        cfg.label = args.label;
-        cfg.seed = args.seed + i;
-        cfg.params.n = args.n;
-        cfg.params.k = args.k;
-        cfg.params.x = args.x;
-        cfg.params.t = args.t;
-        cfg.params.K = args.K;
-        configs.push_back(cfg);
+    RunConfig base;
+    base.label = args.label;
+    base.params = args.params;
+    
+    std::vector<RunConfig> allConfigs;
+    switch (args.mode) {
+        case ExecutionMode::Single:
+            allConfigs.push_back(base);
+            break;
+            
+        case ExecutionMode::Random:
+            allConfigs = ExperimentRunner::generateRandomConfigs(args.nRuns, args.seed);
+            break;
+            
+        case ExecutionMode::Seeds:
+            allConfigs = ExperimentRunner::assignSeeds(base, args.nRuns);
+            break;
     }
 
-    std::cout << "Running " << configs.size() << " experiment\n";
-    std::vector<RunResult> results = runner.run(configs, args.threads);
+    std::cout << "Running " << allConfigs.size() << " experiment\n";
+    std::vector<RunResult> results = runner.run(allConfigs, args.threads);
 
     // CSV
     std::string out = args.outPath.empty()

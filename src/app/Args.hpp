@@ -4,20 +4,37 @@
 #include <optional>
 #include <string>
 
+#include "mbo/MBOConfig.hpp"
+
+enum class ExecutionMode {
+    /** Run a single experiment with the provided parameters. */
+    Single,
+
+    /** Run N experiments with random hyperparameters. */
+    Random,
+
+    /** Run N experiments with the same parameters but different random seeds. */
+    Seeds
+};
+
+
 struct Args {
     std::string instancePath;
     std::string outPath;
     std::string label = "MBO";
+    ExecutionMode mode = ExecutionMode::Single;
 
     int nRuns   = 1;         
     int seed    = 1;
     int threads = 0;
 
-    int n = 51;                 
-    int k = 5;                  
-    int x = 1;                  
-    int t = 1000;              
-    int K = 1000000;
+    MBOconfig params {
+        .n = 51,
+        .k = 5,
+        .x = 1,
+        .t = 1000,
+        .K = 1000000
+    };
 };
 
 inline std::optional<Args> parseArgs(int argc, char** argv) {
@@ -25,7 +42,7 @@ inline std::optional<Args> parseArgs(int argc, char** argv) {
     for(int i = 1; i < argc; i++) {
         std::string arg = argv[i];
         if(i + 1 >= argc) {
-            std::cerr << "Mising value " << arg << "\n";
+            std::cerr << "Missing value " << arg << "\n";
             return std::nullopt;
         }
 
@@ -37,11 +54,16 @@ inline std::optional<Args> parseArgs(int argc, char** argv) {
             else if (arg == "-nRuns")    a.nRuns = std::stoi(v);
             else if (arg == "-seed")     a.seed = std::stoi(v);
             else if (arg == "-threads")  a.threads = std::stoi(v);
-            else if (arg == "-n")        a.n = std::stoi(v);
-            else if (arg == "-k")        a.k = std::stoi(v);
-            else if (arg == "-x")        a.x = std::stoi(v);
-            else if (arg == "-t")        a.t = std::stoi(v);
-            else if (arg == "-K")        a.K = std::stoi(v);
+            else if (arg == "-n")        a.params.n = std::stoi(v);
+            else if (arg == "-k")        a.params.k = std::stoi(v);
+            else if (arg == "-x")        a.params.x = std::stoi(v);
+            else if (arg == "-t")        a.params.t = std::stoi(v);
+            else if (arg == "-K")        a.params.K = std::stoi(v);
+            else if (arg == "-mode"){
+                if (v == "random")       a.mode = ExecutionMode::Random;
+                else if (v == "seeds")   a.mode = ExecutionMode::Seeds;
+                else                     a.mode = ExecutionMode::Single;
+            }
             else {
                 std::cerr << "IDK: " << arg << "\n";
                 return std::nullopt;

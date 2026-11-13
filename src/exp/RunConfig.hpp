@@ -7,5 +7,6 @@
 struct RunConfig {
     MBOconfig params;
     std::string label;
+    bool randomStart = false;
     int seed = 0;
 };

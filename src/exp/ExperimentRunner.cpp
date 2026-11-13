@@ -104,3 +104,38 @@ std::vector<RunConfig> ExperimentRunner::assignSeeds(const RunConfig& base, int 
     return configs;
 }
 
+std::vector<RunConfig> ExperimentRunner::generateRandomConfigs(int numConfigs, int baseSeed) { 
+
+    std::mt19937 rng(baseSeed);
+    std::uniform_int_distribution<int> distHalfN(5, 50);
+    std::uniform_int_distribution<int> distX(1, 3);
+    std::uniform_int_distribution<int> distk(6, 10);
+    std::uniform_int_distribution<int> distK(500000, 1000000);
+    std::uniform_int_distribution<int> distSeed(1, 1000000);
+ 
+    std::vector<RunConfig> configs;
+    configs.reserve(numConfigs);
+ 
+    for(int i = 0; i < numConfigs; i++) {
+        MBOconfig params;
+
+        params.n = 2 * distHalfN(rng) + 1;
+        params.x = distX(rng);
+        params.k = 2 * params.x + 1 + distk(rng);
+        params.K = distK(rng);
+
+        int perTour = params.k + (params.n - 1) * (params.k - params.x);
+        int tMax = std::max(1, params.K / (perTour * 3));
+        params.t = std::uniform_int_distribution<int>(1, tMax)(rng);
+ 
+        params.validate();
+ 
+        RunConfig config;
+        config.label = "Random_MBO_Run_" + std::to_string(i + 1);
+        config.params = params;
+        config.seed = distSeed(rng);
+        configs.push_back(config);
+    }
+
+    return configs;
+}

@@ -33,4 +33,5 @@ class ExperimentRunner {
         std::vector<RunResult> run(const std::vector<RunConfig>& configs, int threads = 0) const;
 
         static std::vector<RunConfig> assignSeeds(const RunConfig& base, int runs, int baseSeed = 1);
+        static std::vector<RunConfig> generateRandomConfigs(int numConfigs, int baseSeed);
 };

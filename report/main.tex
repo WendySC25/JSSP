@@ -89,7 +89,9 @@ El algoritmo es simple: cada ave genera vecinos de su solución y si el mejor ve
 Asimismo, además de sus propios vecinos, considera los mejores vecinos que el ave de enfrente no utilizó; el líder evalúa
 $k$ vecinos propios y cada seguidor evalúa $k-x$ propios más $x$ heredados. Tras $m$ recorridos completos de la parvada, el
 líder pasa al final de la fila y el ave que estaba atras de ella, toma su lugar. En este reporte se denota por $t$ al número
-de recorridos, para no confundirle con el número de máquinas $m$ del JSSP. Los autores recomiendan que $k \ge 2x+1$. ~\cite{duman2012}.\\
+de recorridos, para no confundirle con el número de máquinas $m$ del JSSP. Los autores recomiendan que $k \ge 2x+1$ y proponen
+como mejor configuración $n=51$, $k=3$, $x=1$ y $m=10$, pero no sin antes advertir que no hay razón para esperar
+que esta configuración funcione bien en problemas de naturaleza distinta~\cite{duman2012}.\\
  
 Una característica importante del algoritmo es que sólo reemplaza la solución de un ave cuando el mejor vecino mejora su costo.
 La diversidad proviene de la población paralela, de la rotación del líder y del mecanismo de compartición de soluciones, 
@@ -240,7 +242,7 @@ un número reducido de veces y en la tabla se reporta una ejecución por variant
 
 Con la misma semilla y los mismos parámetros, tanto D como B parten de la misma solución infactible donde 1595 de los 1600 nodos de la gráfica
 quedan bloqueados por ciclos. La diferencia está en su forma de generar candidatos. Con la vecindad aleatoria, B, el número de nodos bloqueados desciende
-de forma casi lineal, aproximadamente 235 por barrido, pero no llega a cero en las $10^7$ evaluaciones, de modo que la ejecución termina infactible. Aumentar el número de
+de forma casi lineal, aproximadamente 235 por recorrido, pero no llega a cero en las $10^7$ evaluaciones, de modo que la ejecución termina infactible. Aumentar el número de
 evaluaciones podría lograr la factibilidad, pero el costo se traduce en tiempo de ejecución. En cambio, con la vecindad de máquinas, D, el descenso es 
 casi el doble de rápido y se alcanza la factibilidad con $\approx 8.85\times 10^6$ evaluaciones. La solución obtenida tiene un makespan de 260. No obstante, la mayor
 parte del presupuesto se dedica a buscar una solución factible. Además, una vez alcanzada la factibilidad la bandada colapsó: todas las aves quedaron 
@@ -384,9 +386,9 @@ La secuencia de trabajos por máquina se encuentra en la Tabla~\ref{fig:solucion
 
 La Tabla~\ref{tab:hitos} muestra en qué momento de la ejecución se alcanzó cada makespan. El descenso inicial es muy rápido: con $50\,000$ evaluaciones
 (0.5\% de $K$) ya se tiene un makespan de 235, comparable al que las variantes A (232) y C (235) lograron con todo su presupuesto, y con $2.2\times 10^5$ se llega a 204.
-Después el avance se vuelve lento, y entre los barridos 146 y 210 ocurre una meseta de 64 barridos ($\approx 1.9\times 10^6$ evaluaciones), con el mejor fijo en 171. 
+Después el avance se vuelve lento, y entre los recorridos 146 y 210 ocurre una meseta de 64 recorridos ($\approx 1.9\times 10^6$ evaluaciones), con el mejor fijo en 171. 
 La búsqueda logra salir de ella y baja a 166 y finalmente a 165, aunque esta última mejora ocurre con el 98.6\% del presupuesto, por lo que es probable que un mayor
-$K$ siguiera mejorando el resultado. En total, el mejor global mejoró en 40 de los 323 barridos que se lograron completar, y la ejecución termina al agotarse el presupuesto $K$.
+$K$ siguiera mejorando el resultado. En total, el mejor global mejoró en 40 de los 323 recorridos que se lograron completar, y la ejecución termina al agotarse el presupuesto $K$.
 
 \begin{table}[h]
     \centering

@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <iostream>
 #include <stdexcept>
 
 #include "MBOConfig.hpp"
@@ -25,10 +26,15 @@ class MBO {
         std::shared_ptr<const Solution> best;
         
         int evals = 0;
+        double lastBest;
+        int lastImprove;
+        int stagnationLimit;  
+        int escapeSteps = 3; 
 
         void initFlock();
         void step(int i);
         int frontOf(int i);
+        void kick();
 
     public:
         MBO(std::shared_ptr<const Solution> sol, MBOconfig params);

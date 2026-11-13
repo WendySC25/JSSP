@@ -22,6 +22,7 @@ add_library(jssp_core
     src/mbo/MBO.cpp
     src/exp/ExperimentRunner.cpp
     src/exp/ExperimentReporter.cpp
+    src/app/App.cpp
 )
 
 target_include_directories(jssp_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

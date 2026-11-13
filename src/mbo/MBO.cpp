@@ -100,7 +100,7 @@ void MBO::step(int i) {
 
         if(bird.solution->getCost() < best->getCost()) {
             best = bird.solution;
-            // std::cout << best->getCost() << '\n';
+            std::cout << best->getCost() << '\n';
         }
         
         firstLeft = 1;
